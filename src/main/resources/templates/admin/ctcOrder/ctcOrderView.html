@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=查询c">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.userName}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">类型:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.tradeTypeStr}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">币种:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.currencyName}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">承运商:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.storeName}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">价格:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.price}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">数量:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.quantity}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">总金额:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.money}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">状态:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.status}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">打款唯一码:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.memo}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">自动结束时间:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${#dates.format(m.autoEndTime,'yyyy-MM-dd HH:mm:ss')}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.name}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">卡号:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.bankNo}" disabled="disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.bankAddress}" disabled="disabled">
+                </div>
+                <label class="layui-form-label">银行名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" th:value="${ m.bankName}" disabled="disabled">
+                </div>
+            </div>
+            <table id="dataTable" class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="80">创建时间</th>
+                    <th width="50">操作用户</th>
+                    <th width="100">内容</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item:${logList}">
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${item.remark}"></td>
+                </tr>
+                </tbody>
+            </table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.SmsConfigMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.sign,t.key,
+			t.secret,t.gjkey,t.onoff,t.minute,t.hour,t.day,
+			t.email_region_id,t.email_access_key_id,t.email_secret,t.email_account_name,t.email_tag
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="smsConfigModel" id="smsConfig">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="sign" column="sign"/>
+		<result property="key" column="key"/>
+		<result property="secret" column="secret"/>
+		<result property="gjkey" column="gjkey"/>
+		<result property="onoff" column="onoff"/>
+		<result property="minute" column="minute"/>
+		<result property="hour" column="hour"/>
+		<result property="day" column="day"/>
+		<result property="emailRegionId" column="email_region_id"/>
+		<result property="emailAccessKeyId" column="email_access_key_id"/>
+		<result property="emailSecret" column="email_secret"/>
+		<result property="emailAccountName" column="email_account_name"/>
+		<result property="emailTag" column="email_tag"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="smsConfigModelDto" extends="smsConfig" id="smsConfigDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="smsConfigModel">
+		insert into t_sms_config(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="sign != null">`sign`,</if>
+				<if test="key != null">`key`,</if>
+				<if test="secret != null">`secret`,</if>
+				<if test="gjkey != null">`gjkey`,</if>
+				<if test="onoff != null">`onoff`,</if>
+				<if test="minute != null">`minute`,</if>
+				<if test="hour != null">`hour`,</if>
+				<if test="day != null">`day`,</if>
+				<if test="emailRegionId != null">`email_region_id`,</if>
+				<if test="emailAccessKeyId != null">`email_access_key_id`,</if>
+				<if test="emailSecret != null">`email_secret`,</if>
+				<if test="emailAccountName != null">`email_account_name`,</if>
+				<if test="emailTag != null">`email_tag`,</if>
+
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="sign != null">#{sign},</if>
+				<if test="key != null">#{key},</if>
+				<if test="secret != null">#{secret},</if>
+				<if test="gjkey != null">#{gjkey},</if>
+				<if test="onoff != null">#{onoff},</if>
+				<if test="minute != null">#{minute},</if>
+				<if test="hour != null">#{hour},</if>
+				<if test="day != null">#{day},</if>
+				<if test="emailRegionId != null">#{emailRegionId},</if>
+				<if test="emailAccessKeyId != null">#{emailAccessKeyId},</if>
+				<if test="emailSecret != null">#{emailSecret},</if>
+				<if test="emailAccountName != null">#{emailAccountName},</if>
+				<if test="emailTag != null">#{emailTag},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="smsConfigModel">
+		update  t_sms_config
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="sign != null">
+                    `sign` = #{sign},
+            </if>
+            <if test="key != null">
+                    `key` = #{key},
+            </if>
+            <if test="secret != null">
+                    `secret` = #{secret},
+            </if>
+            <if test="gjkey != null">
+                    `gjkey` = #{gjkey},
+            </if>
+            <if test="onoff != null">
+                    `onoff` = #{onoff},
+            </if>
+            <if test="minute != null">
+                    `minute` = #{minute},
+            </if>
+            <if test="hour != null">
+                    `hour` = #{hour},
+            </if>
+            <if test="day != null">
+                    `day` = #{day},
+            </if>
+			<if test="emailRegionId != null">
+                    `email_region_id` = #{emailRegionId},
+            </if>
+			<if test="emailAccessKeyId != null">
+                    `email_access_key_id` = #{emailAccessKeyId},
+            </if>
+			<if test="emailSecret != null">
+                    `email_secret` = #{emailSecret},
+            </if>
+			<if test="emailAccountName != null">
+                    `email_account_name` = #{emailAccountName},
+            </if>
+			<if test="emailTag != null">
+                    `email_tag` = #{emailTag},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="smsConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_sms_config t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="smsConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_sms_config t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="smsConfigModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="smsConfigModelDto" resultMap="smsConfigDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_sms_config t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null    and id &gt; -2 ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null   ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null   ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null    and version &gt; -2 ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="sign != null and  sign != ''   ">
+				AND t.sign = #{sign}
+            </if>
+	
+			<if test="key != null and  key != ''   ">
+				AND t.key = #{key}
+            </if>
+	
+			<if test="secret != null and  secret != ''   ">
+				AND t.secret = #{secret}
+            </if>
+	
+			<if test="gjkey != null and  gjkey != ''   ">
+				AND t.gjkey = #{gjkey}
+            </if>
+	
+			<if test="onoff != null    and onoff &gt; -2 ">
+				AND t.onoff = #{onoff}
+            </if>
+	
+			<if test="minute != null    and minute &gt; -2 ">
+				AND t.minute = #{minute}
+            </if>
+	
+			<if test="hour != null    and hour &gt; -2 ">
+				AND t.hour = #{hour}
+            </if>
+	
+			<if test="day != null    and day &gt; -2 ">
+				AND t.day = #{day}
+            </if>
+	
+			
+            <if test="startCreateTime!=null">
+                and t.create_time>#{startCreateTime}
+            </if>
+            <if test="endCreateTime!=null">
+                <![CDATA[and t.create_time<=#{endCreateTime}]]>
+            </if>
+        </trim>
+	</sql>
+
+</mapper>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=募集添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter" id="uploadForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>币种:</label>
+                <select lay-verify="required|currencyId" id="currencyId" name="currencyId" lay-search="">
+                    <option value="">请选择</option>
+                    <option th:each="t,tState:${ currencyList}" th:value="${t.id}" th:text="${t.name}" ></option>
+                </select>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>币种图片:</label>
+                <div class="layui-input-block">
+                    <input type="file" id="image" name="file"  lay-verify="required|image" autocomplete="off" placeholder="币种图片" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>rdb价格:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="rdbPrice" name="rdbPrice"  lay-verify="required|rdbPrice" autocomplete="off" placeholder="rdb价格" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>usdt价格:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="usdtPrice" name="usdtPrice"  lay-verify="required|usdtPrice" autocomplete="off" placeholder="usdt价格" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>目标人数:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="targetNumber" name="targetNumber"  lay-verify="required|targetNumber" autocomplete="off" placeholder="目标人数" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>发行时间:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="publishTime" id="publishTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+
+<!--                   <input type="datetime-local" id="publishTime" name="publishTime"  lay-verify="required|publishTime" autocomplete="off" placeholder="发行时间" class="layui-input">-->
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>发行总量:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="issuance" name="issuance"  lay-verify="required|issuance" autocomplete="off" placeholder="发行总量" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>流通总量:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="circulation" name="circulation"  lay-verify="required|circulation" autocomplete="off" placeholder="流通总量" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>白皮书:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="whitePaper" name="whitePaper"  lay-verify="required|whitePaper" autocomplete="off" placeholder="白皮书" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>官网:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="url" name="url"  lay-verify="required|url" autocomplete="off" placeholder="官网" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>区块查询:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="block" name="block"  lay-verify="required|block" autocomplete="off" placeholder="区块查询" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>简介:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="introduction" name="introduction"  lay-verify="required|introduction" autocomplete="off" placeholder="简介" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>显示状态:</label>
+                <div class="layui-input-block">
+<!--                    <input type="text" id="showStatus" name="showStatus"  lay-verify="required|showStatus" autocomplete="off" placeholder="显示状态" class="layui-input">-->
+                    不显示:<input type="radio" value="0"  name="showStatus">
+                    显示:<input type="radio" value="1" name="showStatus">
+                </div>
+            </div>
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label"><span style="color: red">*</span>状态:</label>-->
+<!--                <div class="layui-input-block">-->
+<!--                    <input type="text" id="status" name="status"  lay-verify="required|status" autocomplete="off" placeholder="状态" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>开始时间:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="startTime" id="startTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+
+                    <!--                    <input type="datetime-local" id="startTime" name="startTime"  lay-verify="required|startTime" autocomplete="off" placeholder="开始时间" class="layui-input">-->
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>结束时间:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="endTime" id="endTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+
+                 </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+
+    layui.use(['laydate', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                    liuQi = layui.liuQi,
+                    laydate = layui.laydate;
+        laydate.render({
+            elem: '#publishTime',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#startTime',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTime',
+            type: 'datetime'
+        });
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                //radio验证
+                otherReq: function(value,item){
+                    var $ = layui.$;
+                    var verifyName=$(item).attr('name')
+                            , verifyType=$(item).attr('type')
+                            ,formElem=$(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                            ,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                            ,isTrue= verifyElem.is(':checked')//是否命中校验
+                            ,focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                    if(!isTrue || !value){
+                        //定位焦点
+                        focusElem.css(verifyType=='radio'?{"color":"#FF5722"}:{"border-color":"#FF5722"});
+                        //对非输入框设置焦点
+                        focusElem.first().attr("tabIndex","1").css("outline","0").blur(function() {
+                            focusElem.css(verifyType=='radio'?{"color":""}:{"border-color":""});
+                        }).focus();
+                        return '必填项不能为空';
+                    }
+                },
+
+                currencyId: function (value) {
+                },
+                image: function (value) {
+                },
+                rdbPrice: function (value) {
+                },
+                usdtPrice: function (value) {
+                },
+                targetNumber: function (value) {
+                },
+                publishTime: function (value) {
+                },
+                issuance: function (value) {
+                },
+                circulation: function (value) {
+                },
+                whitePaper: function (value) {
+                },
+                url: function (value) {
+                },
+                block: function (value) {
+                },
+                introduction: function (value) {
+                },
+                showStatus: function (value) {
+                },
+                status: function (value) {
+                },
+                startTime: function (value) {
+                },
+                endTime: function (value) {
+                },
+            })
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                var formData = new FormData($('#uploadForm')[0]);
+                liuQi.ajaxUpload("/admin/raiseConfig/addP",formData,"",
+                        function (data) {
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                           // return true;
+                        }
+                );
+                 return false;
+            });
+    });
+</script>
+
+</body>
+</html>

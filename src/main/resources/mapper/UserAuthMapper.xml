@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.UserAuthMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.version,t.remark,t.user_id,t.real_name,t.idcart,t.auth_status,t.image1,t.image2,t.image3,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="userAuthModel" id="userAuth">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="version" column="version"/>
+		<result property="remark" column="remark"/>
+		<result property="userId" column="user_id"/>
+		<result property="realName" column="real_name"/>
+		<result property="idcart" column="idcart"/>
+		<result property="authStatus" column="auth_status"/>
+		<result property="image1" column="image1"/>
+		<result property="image2" column="image2"/>
+		<result property="image3" column="image3"/>
+		<result property="userName" column="userName"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="userAuthModelDto" extends="userAuth" id="userAuthDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="userAuthModel">
+		insert into t_user_auth(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="userId != null">`user_id`,</if>
+				<if test="realName != null">`real_name`,</if>
+				<if test="idcart != null">`idcart`,</if>
+				<if test="authStatus != null">`auth_status`,</if>
+				<if test="image1 != null">`image1`,</if>
+				<if test="image2 != null">`image2`,</if>
+				<if test="image3 != null">`image3`,</if>
+		
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="version != null">#{version},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="userId != null">#{userId},</if>
+				<if test="realName != null">#{realName},</if>
+				<if test="idcart != null">#{idcart},</if>
+				<if test="authStatus != null">#{authStatus},</if>
+				<if test="image1 != null">#{image1},</if>
+				<if test="image2 != null">#{image2},</if>
+				<if test="image3 != null">#{image3},</if>
+		
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="userAuthModel">
+		update  t_user_auth
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="userId != null">
+                    `user_id` = #{userId},
+            </if>
+            <if test="realName != null">
+                    `real_name` = #{realName},
+            </if>
+            <if test="idcart != null">
+                    `idcart` = #{idcart},
+            </if>
+            <if test="authStatus != null">
+                    `auth_status` = #{authStatus},
+            </if>
+            <if test="image1 != null">
+                    `image1` = #{image1},
+            </if>
+            <if test="image2 != null">
+                    `image2` = #{image2},
+            </if>
+            <if test="image3 != null">
+                    `image3` = #{image3},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="userAuthDto">
+		select <include refid="allColumn"></include> 
+		from  t_user_auth t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="userAuthDto">
+		select <include refid="allColumn"></include> 
+		from  t_user_auth t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="userAuthModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="userAuthModelDto" resultMap="userAuthDto">
+		select <include refid="allColumn"></include>,u.name as userName
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_user_auth t join t_user u
+		on t.user_id = u.id
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null    and id &gt; -2 ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null   ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null   ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="version != null    and version &gt; -2 ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="userId != null    and userId &gt; -2 ">
+				AND t.user_id = #{userId}
+            </if>
+	
+			<if test="realName != null and  realName != ''   ">
+				AND t.real_name = #{realName}
+            </if>
+	
+			<if test="idcart != null and  idcart != ''   ">
+				AND t.idcart = #{idcart}
+            </if>
+	
+			<if test="authStatus != null    and authStatus &gt; -2 ">
+				AND t.auth_status = #{authStatus}
+            </if>
+	
+			<if test="image1 != null and  image1 != ''   ">
+				AND t.image1 = #{image1}
+            </if>
+	
+			<if test="image2 != null and  image2 != ''   ">
+				AND t.image2 = #{image2}
+            </if>
+	
+			<if test="image3 != null and  image3 != ''   ">
+				AND t.image3 = #{image3}
+            </if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+			
+        </trim>
+	</sql>
+
+
+	<select id="getByUserId" resultMap="userAuthDto">
+		select <include refid="allColumn"></include>
+		from  t_user_auth t
+		where t.user_id = #{userId}
+		limit 1
+	</select>
+
+	<select id="getSuccessIdcart" resultType="integer">
+		select count(*)
+		from  t_user_auth t
+		where t.idcart = #{idcart}
+		and t.auth_status=2
+	</select>
+</mapper>

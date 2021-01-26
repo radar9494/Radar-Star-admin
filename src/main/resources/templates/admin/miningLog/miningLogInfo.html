@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=miningLog列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"  style="width: 200px" >用户名(查询直推下一级)</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="parentName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                        </div>
+                        <div class="layui-input-inline">
+                            <span>币种</span>
+                            <select name="currencyId" lay-search="">
+                                <option value="">所有</option>
+                                <option th:each="t,tState:${ currencyList}" th:value="${t.currencyId}" th:text="${t.currencyName}" ></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <div class="layui-btn-group">
+
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/miningLog/miningInfo',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'userName', title: '用户',align: "center"},
+                    {field: 'score', title: '用户持币',align: "center"},
+                    {field: 'teamPushTotal', title: '团队持币总量',align: "center"},
+                    {field: 'positionGain', title: '持币总收益',align: "center"},
+                    {field: 'promotionRevenue', title: '推广总收益',align: "center"},
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'edit') {
+                    //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+
+                } else if (obj.event === 'view') {
+                }
+            });
+        });
+</script>
+</body>
+</html>

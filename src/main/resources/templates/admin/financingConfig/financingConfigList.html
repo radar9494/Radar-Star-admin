@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=添加融资融币配置">
+</head>
+<body>
+<div class="page-container">
+    <div class="text-l">
+        <form id="searchFrom" method="get" action="/admin/financingConfig/exportExc">
+            ID:<input type="text" class="input-text" style="width:80px" autocomplete="off" placeholder="id" id="id" name="id">
+                   币种：
+                    <span class="select-box inline">
+                        <select class="select" id="currencyId" name="currencyId">
+                            <option value="">全部</option>
+                            <option th:each="t,tState:${currencyList}" th:value="${t.id}" th:text="${t.name}" ></option>
+                        </select>
+                    </span>
+                   发放类型：
+                   <span class="select-box inline">
+                        <select class="select" id="grantType" name="grantType">
+                            <option value="">请选择</option>
+                            <option th:each="t,tState:${ grantTypeList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                        </select>
+                    </span>
+                    状态：
+                    <span class="select-box inline">
+                        <select class="select" id="status" name="status">
+                            <option value="">请选择</option>
+                            <option th:each="t,tState:${ statusList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                        </select>
+                    </span>
+
+            <div class="cl pd-5 bg-1 bk-gray mt-20">
+                <a href="javascript:" onclick="add('添加','/admin/financingConfig/toAdd','','510')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加</a>
+                <a href="javascript:" onclick="exportExc()" class="btn btn-success radius"><i class="Hui-iconfont">&#xe600;</i> 导出</a>
+                <a class="btn btn-success radius r btnR" style="line-height:1.6em" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+                <button type="reset" class="btn btn-success radius r btnR" > 重置</button>
+                <button type="button" class="btn btn-success radius r btnR" onclick="search()"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+            </div>
+        </form>
+    </div>
+    <div class="mt-20">
+        <table id="dataTable" class="table table-border table-bordered table-hover table-bg table-sort dataTable">
+            <thead>
+            <tr class="text-c">
+                <th width="25">序号</th>
+                <th width="25">ID</th>
+                <th width="80">扣除币种名称</th>
+                <th width="80">总额度</th>
+                <th width="80">已融资额度</th>
+                <th width="80">融资获得币种名称</th>
+                <th width="80">兑换比例（1：融资获得币种）</th>
+                <th width="80">开始时间</th>
+                <th width="80">结束时间</th>
+                <th width="80">每次最小数量</th>
+                <th width="80">每次最大数量</th>
+                <th width="80">发放类型</th>
+                <th width="80">状态</th>
+                <th width="80">操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+    //查询信息
+    function getSearch(search){
+        if(search == undefined){
+            search={};
+        }
+        //获取表单信息
+        var data=$("#searchFrom").serializeObject();
+        return  $.extend(search, data);
+    }
+    var tbl;
+    $(function () {
+        tbl=$('.dataTable').dataTable({
+            'ordering':false,//是否排序
+            //"aaSorting": [ 0, "asc" ],//默认第几个排序
+            "ajax": {
+                url:"/admin/financingConfig/queryList",
+                type:"post",
+                dataType: "json",
+                data:function (d) {
+                    //删除其他无关字段
+                    delete d.columns;
+                    delete d.search;
+                    delete d.order;
+                    d=getSearch(d);
+                },
+                dataSrc:function(data){
+                    if(data.recordsTotal==null){
+                        data.recordsTotal=0;
+                    }
+                    //查询结束取消按钮不可用
+                    return data.rows;//自定义数据源，默认为data
+                }
+            },
+            "columns": [
+                { "data": "id","bSortable": false,
+                    "render": function ( data, type, full, meta ) {
+                        return meta.row+1;
+                    }
+                },
+                { "data": "id" ,"bSortable": false},
+                { "data": "currencyName" ,"bSortable": false},
+                { "data": "quantity" ,"bSortable": false},
+                { "data": "curQuantity" ,"bSortable": false},
+                { "data": "financingCurrencyName" ,"bSortable": false},
+                { "data": "exchange" ,"bSortable": false},
+                { "data": "startTime" ,"bSortable": false},
+                { "data": "endTime" ,"bSortable": false},
+                { "data": "min" ,"bSortable": false},
+                { "data": "max" ,"bSortable": false},
+                { "data": "grantTypeStr" ,"bSortable": false},
+                { "data": "statusStr" ,"bSortable": false,
+                    "render": function (data, type,row) {
+                        var html="";
+                        if(row.status==1){
+                            html="<span class='label label-success radius'>"+row.statusStr+"</span>";
+                        }else{
+                            html="<span class='label label-warning radius'>"+row.statusStr+"</span>";
+                        }
+                        return html;
+                    }
+                },
+                    { "data":  null,"bSortable": false,
+                    "render": function (data, type,row) {
+                        var id = '"' + data.id + '"';
+                        var html="";
+                        html += "<a title='编辑' href='javascript:;' class='btn radius label-warning' onclick='update(\"编辑\",\"/admin/financingConfig/toUpdate\","+ id + ",\"\",\"510\")' >编辑</a>";
+                        html += "<a title='介绍' href='javascript:;' class='btn radius label-success' onclick='view(\"介绍\",\"/admin/financingIntroduce/getInfo\","+ id + ",\"\",\"510\")' >介绍</a>";
+                        html += "<a title='清除缓存' href='javascript:;' class='btn radius label-warning' onclick='cleanCache("+ id + ")' >清除缓存</a>";
+                        return html;
+                    }
+                }
+            ],
+            "retrieve":true,
+            "searching": false,
+            "pageLength": 20,
+            "aLengthMenu" : [ 20, 30, 50 ] , //更改显示记录数选项  	    "iDisplayLength" : 2, //默认显示的记录数
+            "bLengthChange": true,                  //是否允许用户自定义每页显示条数。
+            "bPaginate": true,                      //是否分页。
+            "bProcessing": true,                    //当datatable获取数据时候是否显示正在处理提示信息。
+            "sPaginationType": 'full_numbers',      //分页样式
+            "serverSide":true,
+            "language": {
+                "sInfoFiltered": ""//去除显示
+            }
+        });
+    });
+
+    //查询
+    function search(){
+        tbl.fnClearTable();
+    }
+    //导出
+    function exportExc(){
+        $("#searchFrom").submit();
+    }
+
+    /*添加*/
+    function add(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+    /*编辑*/
+    function update(title,url,id,w,h){
+        url=url+"?id="+id;
+        layer_show(title,url,w,h);
+    }
+    function cleanCache(id){
+        $.ajax({
+            url:"/admin/financingIntroduce/cleanCacheByIdP",
+            data:{"id":id},
+            dataType:"json",
+            success:function(data){
+                layer.msg(data.msg,{icon: 1,time:1000});
+            }
+        });
+    }
+    /*查看*/
+    function view(title,url,id,w,h){
+        url=url+"?id="+id;
+        layer_show(title,url,w,h);
+    }
+</script>
+</body>
+</html>

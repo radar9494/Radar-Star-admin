@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=用户层级列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-btn-group">
+            <input type="hidden" id="userId" th:value="${userId}">
+            <button class="layui-btn layui-btn-sm data-show-btn">切换视图</button>
+        </div>
+        <ul id="userTree" class="ztree"></ul>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+    var setting = {
+        isSimpleData : true, //数据是否采用简单 Array 格式，默认false
+        treeNodeKey : "id", //在isSimpleData格式下，当前节点id属性
+        treeNodeParentKey : "pId", //在isSimpleData格式下，当前节点的父节点id属性
+        showLine : true, //是否显示节点间的连线
+        data:{
+        },
+        callback :{
+            onClick : function(event, treeId, treeNode, clickFlag) {
+                // 判断是否父节点
+                if(!treeNode.isParent){
+                    //alert("treeId自动编号：" + treeNode.tId + ", 节点id是：" + treeNode.id + ", 节点文本是：" + treeNode.name);
+                    $.ajax({
+                        url: "/admin/userLevel/getChild",//请求的action路径
+                        data:{"pId":treeNode.id},
+                        error: function () {//请求失败处理函数
+                            alert('请求失败');
+                        },
+                        success:function(data)
+                        { //添加子节点到指定的父节点
+                            var jsondata= eval(data);
+                            if(jsondata == null || jsondata == ""){
+                                //末节点的数据为空   所以不再添加节点  这里可以根据业务需求自己写
+                                //$("#treeFrame").attr("src",treeNode.url);
+                            }
+                            else{
+                                var treeObj = $.fn.zTree.getZTreeObj("userTree");
+                                //treeNode.halfCheck = false;
+                                var parentZNode = treeObj.getNodeByParam("id", treeNode.id, null);//获取指定父节点
+                                newNode = treeObj.addNodes(parentZNode,jsondata, false);
+                            }
+                        }
+                    });
+                }
+            }
+        },
+    };
+
+    var treeNodes;
+
+    function search(){
+        var userId=$("#userId").val();
+        $.ajax({
+            async : false,
+            cache:false,
+            type: 'POST',
+            dataType : "json",
+            url: "/admin/userLevel/getChildById",//请求的action路径
+            data:{"userId":userId},
+            error: function () {//请求失败处理函数
+                alert('请求失败');
+            },
+            success:function(data){ //请求成功后处理函数。
+                treeNodes = eval(data); //把后台封装好的简单Json格式赋给treeNodes
+                $.fn.zTree.init($("#userTree"), setting, treeNodes);
+            }
+        });
+    }
+
+    search();
+
+    //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+    layui.use(['form','liuQi'], function () {
+        var form = layui.form;
+
+        $(".data-show-btn").on("click", function () {
+            //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+            window.location.href='/admin/userLevel/toList';
+        });
+    });
+</script>
+</body>
+</html>

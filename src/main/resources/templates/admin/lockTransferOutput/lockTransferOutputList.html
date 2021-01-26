@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=锁仓转出列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="用户">用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" autocomplete="off" class="layui-input" title="用户">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="币种id">币种</label>
+                            <div class="layui-input-inline">
+                                <select name="currencyId" lay-search="">
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ currencyIdList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+
+        <div class="layui-btn-group">
+            <!-- <button class="layui-btn layui-btn-sm data-add-btn">添加</button> -->
+        </div>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <!-- <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="edit">编辑</a> -->
+        <script type="text/html" id="currentTableBar">
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            //获取表单高度
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/lockTransferOutput/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'userName', title: '用户',align: "center"},
+                    {field: 'realName', title: '姓名',align: "center"},
+                    {field: 'currencyName', title: '币种',align: "center"},
+                    {field: 'applyQuantity', title: '申请数量',align: "center"},
+                    {field: 'quantity', title: '到账数量',align: "center"},
+                    {field: 'rate', title: '手续费(%)',align: "center"},
+                    {field: 'charge', title: '手续费',align: "center"},
+                    {field: 'receiveUserName', title: '接收用户',align: "center"},
+                    {field: 'createTime',width:160, title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                    {title: '操作', width: '10%', templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/admin/lockTransferOutput/exportExc',params);
+                return false;
+            });
+
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'edit') {
+                } else if (obj.event === 'view') {
+                }
+            });
+        });
+</script>
+</body>
+</html>

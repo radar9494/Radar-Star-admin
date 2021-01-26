@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=OTC记录列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="币种id">币种</label>
+                            <div class="layui-input-inline">
+                                <select name="currencyId" lay-search="">
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ currencyList}" th:value="${t.id}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="买用户id">买用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="buyUserName" autocomplete="off" class="layui-input" title="买用户">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="卖用户id">卖用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sellUserName" autocomplete="off" class="layui-input" title="卖用户">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="类型">类型</label>
+                            <div class="layui-input-inline">
+                                <select name="type" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ typeList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="状态">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="status" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ statusList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="打款唯一码">打款唯一码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="memo" autocomplete="off" class="layui-input" title="打款唯一码">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {{# if(d.status==5){ }}
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="toAppeal">申诉</a>
+            {{#} }}
+            <a class="layui-btn layui-btn-xs" lay-event="view">查询</a>
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/otcOrderRecord/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'orderId', title: '订单id',align: "center"},
+                    {field: 'currencyName', title: '币种',align: "center"},
+                    {field: 'buyUserName', title: '买用户',align: "center"},
+                    {field: 'sellUserName', title: '卖用户',align: "center"},
+                    {field: 'typeStr', title: '类型',align: "center",
+                        templet: function (d) {
+                            //原始按钮:layui-btn-primary    默认按钮:layui-btn    百搭按钮:layui-btn-normal
+                            //暖色按钮:layui-btn-warm       警告按钮:layui-btn-danger   禁用按钮:layui-btn-disabled
+                            var type="layui-btn-warm";
+                            if(d.type==0){
+                                type="layui-btn-primary";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.typeStr+"</a>";
+                        }
+                    },
+                    {field: 'statusStr', title: '状态',align: "center",
+                        templet: function (d) {
+                            var type="";
+                            if(d.status==0){
+                                type="layui-btn-primary";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.statusStr+"</a>";
+                        }
+                    },
+                    {field: 'price', title: '价格',align: "center"},
+                    {field: 'quantity', title: '数量',align: "center"},
+                    {field: 'money', title: '总金额',align: "center"},
+                    {field: 'memo', title: '打款唯一码',align: "center"},
+                    {field: 'appealTypeStr', title: '申诉方向',align: "center"},
+                    {field: 'appealUserName', title: '申诉人',align: "center"},
+                    {field: 'appealContent', title: '申诉内容',align: "center"},
+                    {field: 'successStatusStr', title: '最终状态',align: "center"},
+                    {field: 'createTime',width:160, title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                    {title: '操作', width: '10%', templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/admin/otcOrderRecord/exportExc',params);
+                return false;
+            });
+
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'toAppeal') {
+                    liuQi.openDialog("/admin/otcOrderRecord/toAppeal",{"id":data.id},"申诉","","");
+                } else if (obj.event === 'view') {
+                    liuQi.openDialog("/admin/otcOrderRecord/toView",{"id":data.id},"查询","","");
+
+                }
+            });
+        });
+</script>
+</body>
+</html>

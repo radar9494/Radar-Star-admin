@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=交易记录列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="发布人">(卖)姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sellUserName" autocomplete="off" class="layui-input" title="发布人">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="发布人">(买)姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="buyUserName" autocomplete="off" class="layui-input" title="发布人">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="交易类型">交易对</label>
+                            <div class="layui-input-inline">
+                                <select class="layui-select" id="tradeId" name="tradeId">
+                                    <option value="">全部</option>
+                                    <option th:each="t,tState:${tradeList}" th:value="${t.id}" th:text="${t.tradeCurrencyName+'/'+t.currencyName}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="钱包状态">买钱包状态</label>
+                            <div class="layui-input-inline">
+                                <select name="buyWalletStatus" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ walletList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="钱包状态">卖钱包状态</label>
+                            <div class="layui-input-inline">
+                                <select name="sellWalletStatus" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ walletList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {{# if(d.buyWalletStatus!=1 || d.sellWalletStatus !=1 ){ }}
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="doWallet">手动发放</a>
+            {{# } }}
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/tradeRecord/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'tradeId', title: '交易表id',align: "center",
+                        templet: function (d) {
+                            return d.tradeCurrencyName + "/" + d.currencyName
+                        }
+                    },
+                    {field: 'sellUserName', title: '卖用户',align: "center"},
+                    {field: 'sellTrusteeId', title: '卖单id',align: "center"},
+                    {field: 'buyUserName', title: '买用户',align: "center"},
+                    {field: 'buyTrusteeId', title: '买单id',align: "center"},
+                    {field: 'tradeQuantity', title: '已交易数量',align: "center"},
+                    {field: 'tradePrice', title: '成交价格',align: "center"},
+                    {field: 'sellCharge', title: '卖手续费',align: "center"},
+                    {field: 'buyCharge', title: '买手续费',align: "center"},
+                    {field: 'buyPrice', title: '托管买价格',align: "center"},
+                    {field: 'sellPrice', title: '托管卖价格',align: "center"},
+                    {field: 'robotStr', title: '机器人',align: "center"},
+                    {field: 'tradeTypeStr', title: '类型',align: "center",
+                        templet: function (d) {
+                            var type="layui-btn-warm";
+                            if(d.tradeType==0){
+                                type="layui-btn-primary";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.tradeTypeStr+"</a>";
+                        }
+                    },
+                    {field: 'buyWalletStatusStr', title: '(买)状态',align: "center",
+                        templet: function (d) {
+                            //原始按钮:layui-btn-primary    默认按钮:layui-btn    百搭按钮:layui-btn-normal
+                            //暖色按钮:layui-btn-warm       警告按钮:layui-btn-danger   禁用按钮:layui-btn-disabled
+                            var type="";
+                            if(d.buyWalletStatus==0){
+                                type="layui-btn-primary";
+                            }else if(d.buyWalletStatus==2){
+                                type="layui-btn-warm";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.buyWalletStatusStr+"</a>";
+                        }
+                    },
+                    {field: 'sellWalletStatusStr', title: '(卖)状态',align: "center",
+                        templet: function (d) {
+                            //原始按钮:layui-btn-primary    默认按钮:layui-btn    百搭按钮:layui-btn-normal
+                            //暖色按钮:layui-btn-warm       警告按钮:layui-btn-danger   禁用按钮:layui-btn-disabled
+                            var type="";
+                            if(d.sellWalletStatus==0){
+                                type="layui-btn-primary";
+                            }else if(d.sellWalletStatus==2){
+                                type="layui-btn-warm";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.sellWalletStatusStr+"</a>";
+                        }
+                    },
+                    {field: 'createTime',width:160, title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                    {title: '操作', width: '10%', templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/admin/tradeRecord/exportExc',params);
+                return false;
+            });
+
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'doWallet') {
+                    layer.confirm("是否发送到钱包",function (obj) {
+                        liuQi.ajaxRefreshTable("/admin/tradeRecord/doWallet",{"id":data.id},"");
+                    });
+                }
+            });
+        });
+</script>
+</body>
+</html>

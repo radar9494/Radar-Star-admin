@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.RobotMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.user_id,t.trade_id,
+			t.robot_type,t.run_type,t.interval,t.fail_time,t.buy_switch,
+			t.sell_switch,t.wallet_switch,t.base_price,t.min_buy_price,
+			t.max_buy_price,t.min_sell_price,t.max_sell_price,t.quantity_interval_string,
+			t.buy_rise,t.buy_fall,t.sell_fall,t.sell_rise,t.change_interval_time,
+			t.price_multiplier,t.quantity_multiplier,t.mainstream,t.variation_deviation
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="robotModel" id="robot">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="userId" column="user_id"/>
+		<result property="tradeId" column="trade_id"/>
+		<result property="robotType" column="robot_type"/>
+		<result property="runType" column="run_type"/>
+		<result property="interval" column="interval"/>
+		<result property="failTime" column="fail_time"/>
+		<result property="buySwitch" column="buy_switch"/>
+		<result property="sellSwitch" column="sell_switch"/>
+		<result property="walletSwitch" column="wallet_switch"/>
+		<result property="basePrice" column="base_price"/>
+		<result property="minBuyPrice" column="min_buy_price"/>
+		<result property="maxBuyPrice" column="max_buy_price"/>
+		<result property="minSellPrice" column="min_sell_price"/>
+		<result property="maxSellPrice" column="max_sell_price"/>
+		<result property="quantityIntervalString" column="quantity_interval_string"/>
+		<result property="buyRise" column="buy_rise"/>
+		<result property="buyFall" column="buy_fall"/>
+		<result property="sellFall" column="sell_fall"/>
+		<result property="sellRise" column="sell_rise"/>
+		<result property="changeIntervalTime" column="change_interval_time"/>
+		<result property="priceMultiplier" column="price_multiplier"/>
+		<result property="quantityMultiplier" column="quantity_multiplier"/>
+		<result property="mainstream" column="mainstream"/>
+		<result property="variationDeviation" column="variation_deviation"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="robotModelDto" extends="robot" id="robotDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="robotModel">
+		insert into t_robot(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="userId != null">`user_id`,</if>
+				<if test="tradeId != null">`trade_id`,</if>
+				<if test="robotType != null">`robot_type`,</if>
+				<if test="runType != null">`run_type`,</if>
+				<if test="interval != null">`interval`,</if>
+				<if test="failTime != null">`fail_time`,</if>
+				<if test="buySwitch != null">`buy_switch`,</if>
+				<if test="sellSwitch != null">`sell_switch`,</if>
+				<if test="walletSwitch != null">`wallet_switch`,</if>
+				<if test="basePrice != null">`base_price`,</if>
+				<if test="minBuyPrice != null">`min_buy_price`,</if>
+				<if test="maxBuyPrice != null">`max_buy_price`,</if>
+				<if test="minSellPrice != null">`min_sell_price`,</if>
+				<if test="maxSellPrice != null">`max_sell_price`,</if>
+				<if test="quantityIntervalString != null">`quantity_interval_string`,</if>
+				<if test="buyRise != null">`buy_rise`,</if>
+				<if test="buyFall != null">`buy_fall`,</if>
+				<if test="sellFall != null">`sell_fall`,</if>
+				<if test="sellRise != null">`sell_rise`,</if>
+				<if test="changeIntervalTime != null">`change_interval_time`,</if>
+				<if test="priceMultiplier != null">`price_multiplier`,</if>
+				<if test="quantityMultiplier != null">`quantity_multiplier`,</if>
+				<if test="mainstream != null">`mainstream`,</if>
+				<if test="variationDeviation != null">`variation_deviation`,</if>
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="userId != null">#{userId},</if>
+				<if test="tradeId != null">#{tradeId},</if>
+				<if test="robotType != null">#{robotType},</if>
+				<if test="runType != null">#{runType},</if>
+				<if test="interval != null">#{interval},</if>
+				<if test="failTime != null">#{failTime},</if>
+				<if test="buySwitch != null">#{buySwitch},</if>
+				<if test="sellSwitch != null">#{sellSwitch},</if>
+				<if test="walletSwitch != null">#{walletSwitch},</if>
+				<if test="basePrice != null">#{basePrice},</if>
+				<if test="minBuyPrice != null">#{minBuyPrice},</if>
+				<if test="maxBuyPrice != null">#{maxBuyPrice},</if>
+				<if test="minSellPrice != null">#{minSellPrice},</if>
+				<if test="maxSellPrice != null">#{maxSellPrice},</if>
+				<if test="quantityIntervalString != null">#{quantityIntervalString},</if>
+				<if test="buyRise != null">#{buyRise},</if>
+				<if test="buyFall != null">#{buyFall},</if>
+				<if test="sellFall != null">#{sellFall},</if>
+				<if test="sellRise != null">#{sellRise},</if>
+				<if test="changeIntervalTime != null">#{changeIntervalTime},</if>
+				<if test="priceMultiplier != null">#{priceMultiplier},</if>
+				<if test="quantityMultiplier != null">#{quantityMultiplier},</if>
+				<if test="mainstream != null">#{mainstream},</if>
+				<if test="variationDeviation != null">#{variationDeviation},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="robotModel">
+		update  t_robot
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="userId != null">
+                    `user_id` = #{userId},
+            </if>
+            <if test="tradeId != null">
+                    `trade_id` = #{tradeId},
+            </if>
+            <if test="robotType != null">
+                    `robot_type` = #{robotType},
+            </if>
+
+            <if test="runType != null">
+                    `run_type` = #{runType},
+            </if>
+            <if test="interval != null">
+                    `interval` = #{interval},
+            </if>
+            <if test="failTime != null">
+                    `fail_time` = #{failTime},
+            </if>
+            <if test="buySwitch != null">
+                    `buy_switch` = #{buySwitch},
+            </if>
+            <if test="sellSwitch != null">
+                    `sell_switch` = #{sellSwitch},
+            </if>
+            <if test="walletSwitch != null">
+                    `wallet_switch` = #{walletSwitch},
+            </if>
+            <if test="basePrice != null">
+                    `base_price` = #{basePrice},
+            </if>
+            <if test="minBuyPrice != null">
+                    `min_buy_price` = #{minBuyPrice},
+            </if>
+            <if test="maxBuyPrice != null">
+                    `max_buy_price` = #{maxBuyPrice},
+            </if>
+            <if test="minSellPrice != null">
+                    `min_sell_price` = #{minSellPrice},
+            </if>
+            <if test="maxSellPrice != null">
+                    `max_sell_price` = #{maxSellPrice},
+            </if>
+            <if test="quantityIntervalString != null">
+                    `quantity_interval_string` = #{quantityIntervalString},
+            </if>
+            <if test="buyRise != null">
+                    `buy_rise` = #{buyRise},
+            </if>
+            <if test="buyFall != null">
+                    `buy_fall` = #{buyFall},
+            </if>
+            <if test="sellFall != null">
+                    `sell_fall` = #{sellFall},
+            </if>
+            <if test="sellRise != null">
+                    `sell_rise` = #{sellRise},
+            </if>
+            <if test="changeIntervalTime != null">
+                    `change_interval_time` = #{changeIntervalTime},
+            </if>
+            <if test="priceMultiplier != null">
+                    `price_multiplier` = #{priceMultiplier},
+            </if>
+            <if test="quantityMultiplier != null">
+                    `quantity_multiplier` = #{quantityMultiplier},
+            </if>
+            <if test="mainstream != null">
+                    `mainstream` = #{mainstream},
+            </if>
+			<if test="variationDeviation != null">
+                    `variation_deviation` = #{variationDeviation},
+            </if>
+
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="robotDto">
+		select <include refid="allColumn"></include> 
+		from  t_robot t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="robotDto">
+		select <include refid="allColumn"></include> 
+		from  t_robot t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="robotModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="robotModelDto" resultMap="robotDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_robot t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null and  id != ''   ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null and  createTime != ''   ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null and  updateTime != ''   ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null and  version != ''   ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="userId != null and  userId != ''   ">
+				AND t.user_id = #{userId}
+            </if>
+	
+			<if test="tradeId != null and  tradeId != ''   ">
+				AND t.trade_id = #{tradeId}
+            </if>
+	
+			<if test="robotType != null and  robotType != ''   ">
+				AND t.robot_type = #{robotType}
+            </if>
+	
+			<if test="runType != null and  runType != ''   ">
+				AND t.run_type = #{runType}
+            </if>
+	
+			<if test="interval != null and  interval != ''   ">
+				AND t.interval = #{interval}
+            </if>
+	
+			<if test="failTime != null and  failTime != ''   ">
+				AND t.fail_time = #{failTime}
+            </if>
+	
+			<if test="buySwitch != null and  buySwitch != ''   ">
+				AND t.buy_switch = #{buySwitch}
+            </if>
+	
+			<if test="sellSwitch != null and  sellSwitch != ''   ">
+				AND t.sell_switch = #{sellSwitch}
+            </if>
+	
+			<if test="walletSwitch != null and  walletSwitch != ''   ">
+				AND t.wallet_switch = #{walletSwitch}
+            </if>
+	
+			<if test="basePrice != null and  basePrice != ''   ">
+				AND t.base_price = #{basePrice}
+            </if>
+	
+			<if test="minBuyPrice != null and  minBuyPrice != ''   ">
+				AND t.min_buy_price = #{minBuyPrice}
+            </if>
+	
+			<if test="maxBuyPrice != null and  maxBuyPrice != ''   ">
+				AND t.max_buy_price = #{maxBuyPrice}
+            </if>
+	
+			<if test="minSellPrice != null and  minSellPrice != ''   ">
+				AND t.min_sell_price = #{minSellPrice}
+            </if>
+	
+			<if test="maxSellPrice != null and  maxSellPrice != ''   ">
+				AND t.max_sell_price = #{maxSellPrice}
+            </if>
+	
+			<if test="quantityIntervalString != null and  quantityIntervalString != ''   ">
+				AND t.quantity_interval_string = #{quantityIntervalString}
+            </if>
+	
+			<if test="buyRise != null and  buyRise != ''   ">
+				AND t.buy_rise = #{buyRise}
+            </if>
+	
+			<if test="buyFall != null and  buyFall != ''   ">
+				AND t.buy_fall = #{buyFall}
+            </if>
+	
+			<if test="sellFall != null and  sellFall != ''   ">
+				AND t.sell_fall = #{sellFall}
+            </if>
+	
+			<if test="sellRise != null and  sellRise != ''   ">
+				AND t.sell_rise = #{sellRise}
+            </if>
+	
+			<if test="changeIntervalTime != null and  changeIntervalTime != ''   ">
+				AND t.change_interval_time = #{changeIntervalTime}
+            </if>
+	
+			<if test="priceMultiplier != null and  priceMultiplier != ''   ">
+				AND t.price_multiplier = #{priceMultiplier}
+            </if>
+	
+			<if test="quantityMultiplier != null and  quantityMultiplier != ''   ">
+				AND t.quantity_multiplier = #{quantityMultiplier}
+            </if>
+	
+			<if test="mainstream != null and  mainstream != ''   ">
+				AND t.mainstream = #{mainstream}
+            </if>
+			<if test="variationDeviation != null and  variationDeviation != ''   ">
+				AND t.variation_deviation = #{variationDeviation}
+            </if>
+
+			
+            <if test="startCreateTime!=null">
+                and t.create_time>#{startCreateTime}
+            </if>
+            <if test="endCreateTime!=null">
+                <![CDATA[and t.create_time<=#{endCreateTime}]]>
+            </if>
+        </trim>
+	</sql>
+
+	<delete id="removeById">
+		delete from t_robot where id =#{id}
+	</delete>
+</mapper>

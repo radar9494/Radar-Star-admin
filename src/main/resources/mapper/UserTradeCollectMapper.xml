@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.UserTradeCollectMapper">
+
+
+    <!-- 数据库和实体映射-->
+    <resultMap type="userTradeCollectModel" id="userTradeCollectResult">
+        <result property="userId" column="user_id"/>
+        <result property="tradeId" column="trade_id"/>
+    </resultMap>
+
+
+    <select id="getByUserId" resultType="long">
+		select trade_id from  t_user_trade_collect where user_id =#{userId}
+	</select>
+
+    <select id="hasCollect" resultType="int">
+        select count(*) from  t_user_trade_collect where user_id =#{userId} and trade_id =#{tradeId}
+    </select>
+
+    <delete id="deleteByUserId" >
+        delete from  t_user_trade_collect where user_id =#{userId}
+    </delete>
+
+    <delete id="deleteByTradeId" >
+        delete from  t_user_trade_collect where trade_id =#{tradeId}
+    </delete>
+
+    <insert id="saveCollect">
+        insert into t_user_trade_collect(user_id,trade_id) values(#{userId},#{tradeId})
+    </insert>
+
+    <delete id="cancelCollect" >
+        delete from  t_user_trade_collect where user_id =#{userId} and trade_id =#{tradeId}
+    </delete>
+
+</mapper>

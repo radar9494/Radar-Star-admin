@@ -1,0 +1,107 @@
+﻿<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="sys/head :: head" th:with="title=统计">
+</head>
+<div class="layuimini-container">
+	<div class="layuimini-main">
+	<fieldset class="layui-elem-field layuimini-search">
+		<legend>待处理提现</legend>
+		<table class="layui-table">
+			<thead>
+			<tr class="text-c">
+				<th>币种</th>
+				<th>笔数</th>
+				<th>数量</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr class="text-c" th:each="item:${waitList}" >
+				<td th:text="${item.currencyName}" style="color: red"></td>
+				<td th:text="${item.quantity}" style="color: red"></td>
+				<td th:text="${item.total}" style="color: red"></td>
+			</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<!--今日充值 -->
+	<fieldset class="layui-elem-field layuimini-search">
+		<legend>今日充值</legend>
+		<table class="layui-table">
+			<thead>
+				<tr class="text-c">
+					<th>币种</th>
+					<th>笔数</th>
+					<th>数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-c" th:each="item:${toDayRechargeList}">
+					<td th:text="${item.currencyName}"></td>
+					<td th:text="${item.total}"></td>
+					<td th:text="${item.totalQuantity}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<!--总充值 -->
+	<fieldset class="layui-elem-field layuimini-search">
+		<legend>总充值</legend>
+		<table class="layui-table">
+			<thead>
+				<tr class="text-c">
+					<th>币种</th>
+					<th>笔数</th>
+					<th>数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-c" th:each="item:${rechargelist}">
+					<td th:text="${item.currencyName}"></td>
+					<td th:text="${item.total}"></td>
+					<td th:text="${item.totalQuantity}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<fieldset class="layui-elem-field layuimini-search">
+		<legend>今日提现</legend>
+		<table class="layui-table">
+			<thead>
+				<tr class="text-c">
+					<th>币种</th>
+					<th>笔数</th>
+					<th>数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-c" th:each="item:${toDayExtractList}">
+					<td th:text="${item.currencyName}"></td>
+					<td th:text="${item.total}"></td>
+					<td th:text="${item.totalQuantity}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+	<fieldset class="layui-elem-field layuimini-search">
+		<legend>总提现</legend>
+		<table class="layui-table">
+			<thead>
+				<tr class="text-c">
+					<th>币种</th>
+					<th>笔数</th>
+					<th>数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-c" th:each="item:${extractList}" >
+					<td th:text="${item.currencyName}"></td>
+					<td th:text="${item.total}"></td>
+					<td th:text="${item.totalQuantity}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+</div>
+</div>
+</body>
+</html>

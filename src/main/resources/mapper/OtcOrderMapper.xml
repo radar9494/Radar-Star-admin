@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.OtcOrderMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,
+			t.currency_id,t.user_id,t.type,t.price,t.quantity,t.trade_quantity,t.min,t.max,t.yhk,t.zfb,t.wx,t.status,t.cancel,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="otcOrderModel" id="otcOrder">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="type" column="type"/>
+		<result property="price" column="price"/>
+		<result property="quantity" column="quantity"/>
+		<result property="tradeQuantity" column="trade_quantity"/>
+		<result property="min" column="min"/>
+		<result property="max" column="max"/>
+		<result property="yhk" column="yhk"/>
+		<result property="zfb" column="zfb"/>
+		<result property="wx" column="wx"/>
+		<result property="status" column="status"/>
+		<result property="cancel" column="cancel"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="otcOrderModelDto" extends="otcOrder" id="otcOrderDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="otcOrderModel">
+		insert into t_otc_order(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="currencyId != null">`currency_id`,</if>
+				<if test="userId != null">`user_id`,</if>
+				<if test="type != null">`type`,</if>
+				<if test="price != null">`price`,</if>
+				<if test="quantity != null">`quantity`,</if>
+				<if test="tradeQuantity != null">`trade_quantity`,</if>
+				<if test="min != null">`min`,</if>
+				<if test="max != null">`max`,</if>
+				<if test="yhk != null">`yhk`,</if>
+				<if test="zfb != null">`zfb`,</if>
+				<if test="wx != null">`wx`,</if>
+				<if test="status != null">`status`,</if>
+				<if test="cancel != null">`cancel`,</if>
+
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="currencyId != null">#{currencyId},</if>
+				<if test="userId != null">#{userId},</if>
+				<if test="type != null">#{type},</if>
+				<if test="price != null">#{price},</if>
+				<if test="quantity != null">#{quantity},</if>
+				<if test="tradeQuantity != null">#{tradeQuantity},</if>
+				<if test="min != null">#{min},</if>
+				<if test="max != null">#{max},</if>
+				<if test="yhk != null">#{yhk},</if>
+				<if test="zfb != null">#{zfb},</if>
+				<if test="wx != null">#{wx},</if>
+				<if test="status != null">#{status},</if>
+				<if test="cancel != null">#{cancel},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="otcOrderModel">
+		update  t_otc_order
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="userId != null">
+                    `user_id` = #{userId},
+            </if>
+            <if test="type != null">
+                    `type` = #{type},
+            </if>
+            <if test="price != null">
+                    `price` = #{price},
+            </if>
+            <if test="quantity != null">
+                    `quantity` = #{quantity},
+            </if>
+            <if test="tradeQuantity != null">
+                    `trade_quantity` = #{tradeQuantity},
+            </if>
+            <if test="min != null">
+                    `min` = #{min},
+            </if>
+            <if test="max != null">
+                    `max` = #{max},
+            </if>
+            <if test="yhk != null">
+                    `yhk` = #{yhk},
+            </if>
+            <if test="zfb != null">
+                    `zfb` = #{zfb},
+            </if>
+            <if test="wx != null">
+                    `wx` = #{wx},
+            </if>
+            <if test="status != null">
+                    `status` = #{status},
+            </if>
+			<if test="cancel != null">
+                    `cancel` = #{cancel},
+            </if>
+			`version` = #{version}+1
+		</set>
+		where id = #{id} and `version`=#{version}
+	</update>
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="otcOrderDto">
+		select <include refid="allColumn"></include> 
+		from  t_otc_order t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="otcOrderDto">
+		select <include refid="allColumn"></include> 
+		from  t_otc_order t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="otcOrderModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="otcOrderModelDto" resultMap="otcOrderDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_otc_order t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null    and id &gt; -2 ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null    and version &gt; -2 ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="currencyId != null    and currencyId &gt; -2 ">
+				AND t.currency_id = #{currencyId}
+            </if>
+	
+			<if test="userId != null    and userId &gt; -2 ">
+				AND t.user_id = #{userId}
+            </if>
+	
+			<if test="type != null    and type &gt; -2 ">
+				AND t.type = #{type}
+            </if>
+	
+			<if test="price != null  ">
+				AND t.price = #{price}
+            </if>
+	
+			<if test="quantity != null   ">
+				AND t.quantity = #{quantity}
+            </if>
+	
+			<if test="tradeQuantity != null  ">
+				AND t.trade_quantity = #{tradeQuantity}
+            </if>
+	
+			<if test="min != null  ">
+				AND t.min = #{min}
+            </if>
+	
+			<if test="max != null   ">
+				AND t.max = #{max}
+            </if>
+	
+			<if test="yhk != null    and yhk &gt; -2 ">
+				AND t.yhk = #{yhk}
+            </if>
+	
+			<if test="zfb != null    and zfb &gt; -2 ">
+				AND t.zfb = #{zfb}
+            </if>
+	
+			<if test="wx != null    and wx &gt; -2 ">
+				AND t.wx = #{wx}
+            </if>
+	
+			<if test="status != null    and status &gt; -2 ">
+				AND t.status = #{status}
+            </if>
+			<if test="cancel != null    and cancel &gt; -2 ">
+				AND t.cancel = #{cancel}
+            </if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+			
+        </trim>
+	</sql>
+
+	<update id="updateCancelStatus">
+		update t_otc_order set `cancel` = #{cancel} where id =#{orderId}
+	</update>
+
+</mapper>

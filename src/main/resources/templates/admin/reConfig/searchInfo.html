@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=充提配置列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search" style="color: red">
+            手动查询：执行当前币种查询<br/>
+            设置当前高度：设置当前开始查询的高度<br/>
+            查询指定高度：用于查询未到账情景<br/>
+            停止：用于停止当次查询<br/>
+        </fieldset>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="curSearch">手动查询</a>
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="setInit">设置当前高度</a>
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="search">查询指定高度</a>
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="stop">停止</a>
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+    //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+    layui.use(['form','table','laydate','liuQi'], function () {
+        var $ = layui.jquery,
+            table = layui.table,
+            liuQi = layui.liuQi;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/admin/reConfig/currencyList',
+            cols: [[
+                {field: 'currencyName', title: '币种',align: "center"},
+                {field: 'thirdCurrency', title: '查询名称',align: "center"},
+                {field: 'curBlock', title: '区块高度',align: "center"},
+                {title: '操作', width: '55%', templet: '#currentTableBar', fixed: "right", align: "center"}
+            ]],
+            cellMinWidth:100,
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'curSearch') {
+                liuQi.ajax("/admin/reConfig/curSearchBlock",{"currencyId":data.id,"protocol":data.protocol,"thirdCurrency":data.thirdCurrency});
+            } else if (obj.event === 'setInit') {
+                layer.prompt({title: '【'+data.thirdCurrency+'】输入当前查询高度', formType: 0}, function(pass, index){
+                    layer.close(index);
+                    if(pass<0){
+                        layer.msg('设置区块不能小于0', {icon: 5, time: 2000});
+                    }else{
+                        liuQi.ajaxRefreshTable("/admin/reConfig/init",{"thirdCurrency":data.thirdCurrency,"block":pass},"");
+                    }
+                });
+            }else if (obj.event === 'search') {
+                layer.prompt({title: '【'+data.thirdCurrency+'】输入要查询的高度', formType: 0}, function(pass, index){
+                    layer.close(index);
+                    if(pass<0){
+                        layer.msg('查询区块不能小于0', {icon: 5, time: 2000});
+                    }else {
+                        liuQi.ajaxRefreshTable("/admin/reConfig/searchBlock", {
+                            "currencyId": data.id,
+                            "protocol": data.protocol,
+                            "thirdCurrency": data.thirdCurrency,
+                            "block": pass
+                        },"");
+                    }
+                });
+            }else if(obj.event === 'stop'){
+                liuQi.ajax("/admin/reConfig/stop",{"id":data.id});
+            }
+        });
+    });
+</script>
+</body>
+</html>

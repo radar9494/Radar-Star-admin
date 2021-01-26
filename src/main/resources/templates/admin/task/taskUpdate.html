@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=测试添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>任务类名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="jobClassName"  lay-verify="required|jobClassName" autocomplete="off" placeholder="任务类名" class="layui-input" th:value="${jobClassName}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>任务组名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="jobGroupName"  lay-verify="required|jobGroupName" autocomplete="off" placeholder="任务组名" class="layui-input" th:value="${jobGroupName}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>表达式</label>
+                <div class="layui-input-block">
+                    <input type="text" name="cronExpression"  lay-verify="required|cronExpression" autocomplete="off" placeholder="表达式" class="layui-input" th:value="${cronExpression}">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>描述</label>
+                <div class="layui-input-block">
+                    <input type="text" name="description"  lay-verify="required|description" autocomplete="off" placeholder="描述" class="layui-input" th:value="${description}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            liuQi = layui.liuQi,
+            layedit = layui.layedit,
+            laydate = layui.laydate;
+
+
+        form.render();
+
+        //自定义验证规则
+        form.verify({
+            jobClassName: function (value) {
+            },
+            jobGroupName: function (value) {
+            },
+            cronExpression: function (value) {
+            },
+            description: function (value) {
+            },
+        });
+
+        //监听提交
+        form.on('submit(formSubmit)', function (data) {
+            data=data.field;
+            liuQi.ajax("/admin/task/updateJob",data,
+                function (data) {
+                    //关闭
+                    parent.layer.msg(data.msg);
+                    parent.layui.table.reload('currentTableId');
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                }
+            );
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

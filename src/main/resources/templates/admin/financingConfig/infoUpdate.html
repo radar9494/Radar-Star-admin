@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=编辑介绍">
+</head>
+<body>
+<article class="page-container">
+    <form action="/admin/financingIntroduce/updateP" method="post" class="form form-horizontal" id="mainForm">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>标题：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text"  autocomplete="off" name="title" th:value="${ m.title}">
+            </div>
+        </div>
+        <div class="row cl" th:if="${m.image!=null && m.image!=''}">
+            <label class="form-label col-xs-4 col-sm-3"></label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <img width="60" class="product-thumb" th:src="${m.image}">'
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">图片：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="file" class="input-text"  placeholder="" name="file" autocomplete="off">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>内容：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="hidden" id="content" name="content" th:value="${m.content}">
+                <textarea  id="content_temp" name="content_temp"  rows="10" class="ckeditor" th:text="${m.content}"></textarea>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input type="hidden" name="id" th:value="${ m.id}">
+                <input class="btn btn-primary radius" id="submitBtn" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+<script type="text/javascript" th:inline="javascript">
+    $(function() {
+        CKEDITOR.replace('content_temp');
+    });
+    //验证
+    $("#mainForm").validate({
+        rules:{
+            //待修改的规则 基本规则参照 doc/validate.txt
+            /*phone:{
+                required:true,
+                isMobile:true,
+            },*/
+        },
+        onkeyup:false,
+        focusCleanup:true,
+        success:"valid",
+    });
+
+    $(function () {
+        $("#submitBtn").click(function(){
+            var content=CKEDITOR.instances.content_temp.getData();
+            $("#content").val(content);
+            var validstatus= $("#mainForm").valid();
+            if(validstatus){
+                $("#mainForm").ajaxSubmit({
+                    success:function(data){
+                        if(data.code==0){
+                            //刷新
+                            window.parent.search();
+                            //提示
+                            parent.layer.msg(data.msg,{icon: 1,time:1000});
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }else{
+                            parent.layer.msg(data.msg,{icon: 5,time:2000});
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

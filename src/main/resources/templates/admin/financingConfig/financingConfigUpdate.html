@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=编辑融资融币配置">
+</head>
+<body>
+<article class="page-container">
+    <form action="/admin/financingConfig/update" method="post" class="form form-horizontal" id="mainForm">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>扣除币种：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <select class="select" id="currencyId" name="currencyId">
+                    <option th:each="t,tState:${currencyList}" th:value="${t.id}" th:text="${t.name}" th:selected="${m.currencyId==t.id}"></option>
+                </select>
+            </div>
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>总额度：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" class="input-text"  placeholder="融资币种总额度" title="需要获取扣除币种总额度" name="quantity" autocomplete="off" th:value="${#numbers.formatDecimal(m.quantity,1,8)}">
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>融资获取币种：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <select class="select" id="financingCurrencyId" name="financingCurrencyId">
+                    <option th:each="t,tState:${currencyList}" th:value="${t.id}" th:text="${t.name}" th:selected="${m.financingCurrencyId==t.id}"></option>
+                </select>
+            </div>
+
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>兑换比例：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" class="input-text"  placeholder="兑换比例（1：融资获得币种）" title="兑换比例（1：融资获得币种）" name="exchange" autocomplete="off" th:value="${#numbers.formatDecimal(m.exchange,1,8)}">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>开始时间：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"  name="startCreateTime" class="input-text Wdate" style="width:160px;" th:value="${#dates.format(m.startTime,'yyyy-MM-dd HH:mm:ss')}">
+            </div>
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>结束时间：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"  name="endCreateTime" class="input-text Wdate" style="width:160px;" th:value="${#dates.format(m.endTime,'yyyy-MM-dd HH:mm:ss')}">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>每次最小数量：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" class="input-text"  placeholder="" name="min" autocomplete="off" th:value="${#numbers.formatDecimal(m.min,1,8)}">
+            </div>
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>每次最大数量：</label>
+            <div class="formControls col-xs-8 col-sm-4">
+                <input type="text" class="input-text"  placeholder="" name="max" autocomplete="off" th:value="${#numbers.formatDecimal(m.max,1,8)}">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>发放类型：</label>
+            <div class="formControls col-xs-8 col-sm-6">
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="radio"  th:each="t,tState:${ grantTypeList}" th:value="${t.key}" th:checked="${t.key==m.grantType}" name="grantType" th:text="${t.name}">
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>状态：</label>
+            <div class="formControls col-xs-8 col-sm-6">
+                <div class="formControls col-xs-8 col-sm-9">
+                    <span type="text"   th:text="${m.statusStr}" readonly="readonly"></span>
+                </div>
+            </div>
+        </div>
+            <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input type="hidden" name="id" th:value="${ m.id}">
+                <input class="btn btn-primary radius" id="submitBtn" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+<script type="text/javascript" th:inline="javascript">
+    //验证
+    $("#mainForm").validate({
+        rules:{
+            //待修改的规则 基本规则参照 doc/validate.txt
+            currencyId:{
+                required:true,
+                notEqualTo:"#financingCurrencyId",
+            },
+            quantity:{
+                required:true,
+                number:true,
+                min:0
+            },
+            startTime:{
+                required:true,
+            },
+            endTime:{
+                required:true,
+            },
+            financingCurrencyId:{
+                required:true,
+                notEqualTo:"#currencyId",
+            },
+            exchange:{
+                required:true,
+                number:true,
+                min:0
+            },
+            min:{
+                required:true,
+                number:true,
+                min:0
+            },
+            max:{
+                required:true,
+                number:true
+            },
+        },
+        onkeyup:false,
+        focusCleanup:true,
+        success:"valid",
+    });
+
+    $(function () {
+        $("#submitBtn").click(function(){
+            var validstatus= $("#mainForm").valid();
+            if(validstatus){
+                $("#mainForm").ajaxSubmit({
+                    success:function(data){
+                        if(data.code==0){
+                            //刷新
+                            window.parent.search();
+                            //提示
+                            parent.layer.msg(data.msg,{icon: 1,time:1000});
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }else{
+                            parent.layer.msg(data.msg,{icon: 5,time:2000});
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

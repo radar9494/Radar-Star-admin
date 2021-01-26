@@ -1,0 +1,230 @@
+﻿<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=统计">
+</head>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend th:text="${'用户总人数:'+total}"></legend>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>撮合监控</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th>交易对</th>
+                    <th>时间</th>
+                    <th>开盘价</th>
+                    <th>24小时最大</th>
+                    <th>24小时最小</th>
+                    <th>当前价格</th>
+                    <th>24交易量</th>
+                    <th>zb价格</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${list}" >
+                    <td th:text="${item.tradeName}"></td>
+                    <td th:text="${item.time}" th:class="${item.error?'color:red':''}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.tradeInfoDto.open,1,8)}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.tradeInfoDto.tradeMaxPrice,1,8)}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.tradeInfoDto.tradeMinPrice,1,8)}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.tradeInfoDto.currentPrice,1,8)}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.tradeInfoDto.tradeNums,1,8)}"></td>
+                    <td th:text="${item.price}"></td>
+                    <td><span th:text="${item.tradeSwitchStr}" th:class="${item.tradeSwitch==1?'label label-success radius':'label label-warning radius'}"></span></td>
+                    <td>
+                        <a title='启动' href="javascript:" class='btn radius label-success' th:if="${item.tradeSwitch==0}" th:onclick="'javascript:onOffTrade('+${item.tradeId}+',1)' ">启动</a>
+                        <a title='暂停' href="javascript:" class='btn radius label-warning' th:if="${item.tradeSwitch==1}" th:onclick="'javascript:onOffTrade('+${item.tradeId}+',0)' ">暂停</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>定时任务</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="25%">总数</th>
+                    <th width="25%">正常</th>
+                    <th width="25%">暂停数</th>
+                    <th width="25%">异常数</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c">
+                    <td th:text="${taskCount}" style="color: green"></td>
+                    <td th:text="${taskRun}" style="color: green"></td>
+                    <td th:text="${taskPause}" style="color: red"></td>
+                    <td th:text="${taskError}" style="color: red"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>币币异常订单数量</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="50%">交易对</th>
+                    <th width="50%">异常数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${errorList}" >
+                    <td th:text="${item.tradeName}" style="color: red"></td>
+                    <td th:text="${item.count}" style="color: red"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>交易买方未返还异常数量</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="50%">交易对</th>
+                    <th width="50%">异常数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${buyErrorList}" >
+                    <td th:text="${item.tradeName}" style="color: red"></td>
+                    <td th:text="${item.count}" style="color: red"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>交易卖方未返还异常数量</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="50%">交易对</th>
+                    < width="50%">异常数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${sellErrorList}" >
+                    <td th:text="${item.tradeName}" style="color: red"></td>
+                    <td th:text="${item.count}" style="color: red"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>待处理提现</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="30%">币种</th>
+                    <th width="35%">笔数</th>
+                    <th width="35%">数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${waitList}">
+                    <td th:text="${item.currencyName}" style="color: red"></td>
+                    <td th:text="${item.quantity}" style="color: red"></td>
+                    <td th:text="${item.total}" style="color: red"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>今日充值</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="30%">币种</th>
+                    <th width="35%">笔数</th>
+                    <th width="35%">数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${toDayRechargeList}">
+                    <td th:text="${item.currencyName}"></td>
+                    <td th:text="${item.total}"></td>
+                    <td th:text="${item.totalQuantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>总充值</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="30%">币种</th>
+                    <th width="35%">笔数</th>
+                    <th width="35%">数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${rechargelist}">
+                    <td th:text="${item.currencyName}"></td>
+                    <td th:text="${item.total}"></td>
+                    <td th:text="${item.totalQuantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>今日提现</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="30%">币种</th>
+                    <th width="35%">笔数</th>
+                    <th width="35%">数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${toDayExtractList}">
+                    <td th:text="${item.currencyName}"></td>
+                    <td th:text="${item.total}"></td>
+                    <td th:text="${item.totalQuantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>总提现</legend>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="30%">币种</th>
+                    <th width="35%">笔数</th>
+                    <th width="35%">数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c" th:each="item:${extractList}">
+                    <td th:text="${item.currencyName}"></td>
+                    <td th:text="${item.total}"></td>
+                    <td th:text="${item.totalQuantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+    function onOffTrade(id, tradeSwitch) {
+        $.ajax({
+            url: "/admin/redis/onOffTrade",
+            data: {"id": id, "changeSwitch": tradeSwitch},
+            dataType: "json",
+            success: function (data) {
+                layer.msg(data.msg, {icon: 1, time: 1000});
+                window.location.reload();
+            }
+        });
+    }
+</script>
+</body>
+</html>

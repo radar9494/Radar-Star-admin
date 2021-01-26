@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=缓存">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">key</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="key" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" lay-submit lay-filter="data-clean-btn">删除key值</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <textarea class="layui-textarea" id="show"></textarea>
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th colspan="2" scope="col" style="color: red">介绍</th>
+            </tr>
+            <tr class="text-c">
+                <th>key</th>
+                <th>介绍</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="text-c" th:each="t,tState:${map}">
+                <td th:text="${t.key}" style="color: green"></td>
+                <td th:text="${t.value}" style="color: green"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['form','table','laydate','liuQi'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            laydate = layui.laydate,
+            liuQi = layui.liuQi;
+        form.on('submit(data-search-btn)', function (data) {
+            var result = data.field;
+            liuQi.ajax("/admin/redis/getKey",result,function (obj) {
+                if(obj.code==0){
+                    $("#show").val(obj.obj)
+                }
+            });
+            return false;
+        });
+
+        form.on('submit(data-clean-btn)', function (data) {
+            var result = data.field;
+            liuQi.ajax("/admin/redis/cleanKey",result,function (obj) {
+                if(obj.code==0){
+                    $("#show").val(obj.obj)
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=分红配置编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>手续费奖励:</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" th:checked="${m.onOff==1}" lay-filter="onOffShow" lay-skin="switch" lay-text="开|关">
+                        <input type="hidden" id="onOff" name="onOff" th:value="${m.onOff}">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>奖励币种:</label>
+                    <div class="layui-input-inline">
+                        <select class="layer-select" id="awardCurrency" name="awardCurrency">
+                            <option value="">请选择</option>
+                            <option th:each="t,tState:${ currencyList}" th:value="${t.id}" th:text="${t.name}" th:selected="${ t.id == m.awardCurrency}" ></option>
+                        </select>
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>奖励层数:</label>
+                    <div class="layui-input-inline">
+                            <input type="text" id="awardLevel" name="awardLevel" lay-verify="required|awardLevel" autocomplete="off"  class="layui-input" th:value="${ m.awardLevel}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>奖励信息:</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" id="awardInfo" name="awardInfo"  autocomplete="off"  class="layui-input" th:value="${ m.awardInfo}">
+                        <table class="layui-table" style="margin-top: 20px;">
+                            <thead>
+                            <tr class="text-c">
+                                <th>层数</th>
+                                <th>手续费比例%</th>
+                            </tr>
+                            </thead>
+                            <tbody id="listInfo">
+                            <tr th:each="item,itemStatus:${m.awardInfoList}">
+                                <td th:text="${itemStatus.index+1}"></td>
+                                <td><input type='text' th:id="${'info'+itemStatus.index}" class='input-text' th:value="${item}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+            form.on('switch(onOffShow)', function(data){
+                $("#onOff").val(this.checked?1:0);
+            });
+            //日期
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+            });
+        //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                var arr=[];
+                for(var i=0;i<10;i++){
+                    arr.push($("#info"+i).val());
+                }
+                data.awardInfo=arr.join(",");
+                liuQi.ajax("/admin/chargeAwardConfig/update",data);
+                return false;
+            });
+        });
+</script>
+
+</body>
+</html>

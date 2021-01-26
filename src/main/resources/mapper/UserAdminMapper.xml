@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.UserAdminMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.name,t.pwd,t.status,t.role_id,t.auth,t.secret,
+		</trim>
+	</sql>
+	<resultMap type="userAdminModel" id="userAdmin">
+		<result property="id" column="id"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="name" column="name"/>
+		<result property="pwd" column="pwd"/>
+		<result property="status" column="status"/>
+		<result property="roleId" column="role_id"/>
+		<result property="roleName" column="roleName"/>
+		<result property="auth" column="auth"/>
+		<result property="secret" column="secret"/>
+	</resultMap>
+	<!-- 数据库和实体映射-->
+	<resultMap type="userAdminModelDto" extends="userAdmin" id="userAdminDto">
+	</resultMap>
+
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="userAdminModel">
+		insert into t_user_admin(
+		<trim  suffixOverrides=",">
+			update_time,create_time,remark,version,
+			`name`,pwd,status,role_id,auth,secret,
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{name},#{pwd},#{status},#{roleId},	#{auth},#{secret},
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="userAdminModel">
+		update  t_user_admin
+		<set>
+		    <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+		    <if test="remark != null">
+                remark = #{remark},
+            </if>
+		    <if test="version != null">
+                version = #{version},
+            </if>
+	            <if test="name != null">
+                    name = #{name},
+            </if>
+            <if test="pwd != null">
+                    pwd = #{pwd},
+            </if>
+            <if test="status != null">
+                    status = #{status},
+            </if>
+            <if test="roleId != null">
+                    role_id = #{roleId},
+            </if>
+			<if test="auth != null">
+				auth = #{auth},
+			</if>
+			<if test="secret != null">
+				secret = #{secret},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<!-- 查询 -->
+	<select id="getById" resultMap="userAdminDto">
+		select <include refid="allColumn"></include> 
+		from  t_user_admin t 
+		where t.id = #{id}
+		
+	</select>
+
+	<select id="findByName" resultMap="userAdminDto">
+		select <include refid="allColumn"></include>
+		from  t_user_admin t
+		where t.name = #{name}
+
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="userAdminDto">
+		select <include refid="allColumn"></include> 
+		from  t_user_admin t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="userAdminModelDto" resultMap="userAdminDto">
+		select <include refid="allColumn"></include>,r.name as roleName
+		from  t_user_admin t
+		left join t_role r
+		on t.role_id=r.id
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null  ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null   ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null   ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="name != null and  name != '' ">
+				AND t.name = #{name}
+			</if>
+
+			<if test="pwd != null and  pwd != '' ">
+				AND t.pwd = #{pwd}
+			</if>
+
+			<if test="status != null  and status &gt; -2">
+				AND t.status = #{status}
+			</if>
+
+			<if test="roleId != null  and roleId &gt; -2">
+				AND t.role_id = #{roleId}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+
+
+</mapper>

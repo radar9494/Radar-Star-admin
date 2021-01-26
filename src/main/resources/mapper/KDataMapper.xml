@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.KDataMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.type,t.open_price,t.close_price,t.max_price,t.min_price,t.nums,t.trade_id,time,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="kDataModel" id="kData">
+	    <result property="id" column="id"/>
+	    <result property="updateTime" column="update_time"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="remark" column="remark"/>
+	    <result property="version" column="version"/>
+		<result property="type" column="type"/>
+		<result property="openPrice" column="open_price"/>
+		<result property="closePrice" column="close_price"/>
+		<result property="maxPrice" column="max_price"/>
+		<result property="minPrice" column="min_price"/>
+		<result property="nums" column="nums"/>
+		<result property="tradeId" column="trade_id"/>
+		<result property="time" column="time"/>
+	</resultMap>
+    <!-- dto映射  添加的字段放在这块-->
+    <resultMap type="kDataModelDto" extends="kData" id="kDataDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="kDataModel">
+		insert into t_k_data(
+		<trim  suffixOverrides=",">
+			`id`,`update_time`,`create_time`,`remark`,`version`,
+			`type`,`open_price`,`close_price`,`max_price`,`min_price`,`nums`,`trade_id`,`time`,
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{id},#{updateTime},#{createTime},#{remark},#{version},
+			#{type},#{openPrice},#{closePrice},#{maxPrice},#{minPrice},#{nums},#{tradeId},#{time},
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="kDataModel">
+		update  t_k_data
+		<set>
+		    <if test="updateTime != null">
+                `update_time` = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+		    <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+		    <if test="version != null">
+                `version` = #{version},
+            </if>
+	            <if test="type != null">
+                    `type` = #{type},
+            </if>
+            <if test="openPrice != null">
+                    `open_price` = #{openPrice},
+            </if>
+            <if test="closePrice != null">
+                    `close_price` = #{closePrice},
+            </if>
+            <if test="maxPrice != null">
+                    `max_price` = #{maxPrice},
+            </if>
+            <if test="minPrice != null">
+                    `min_price` = #{minPrice},
+            </if>
+            <if test="nums != null">
+                    `nums` = #{nums},
+            </if>
+            <if test="tradeId != null">
+                    `trade_id` = #{tradeId},
+            </if>
+			<if test="time != null">
+                    `time` = #{time},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="kDataDto">
+		select <include refid="allColumn"></include> 
+		from  t_k_data t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="kDataDto">
+		select <include refid="allColumn"></include> 
+		from  t_k_data t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="kDataModelDto" resultMap="kDataDto">
+		select <include refid="allColumn"></include> 
+		from  t_k_data t
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null   ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null   ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="type != null and  type &gt; -2 ">
+				AND t.type = #{type}
+			</if>
+
+			<if test="openPrice != null  ">
+				AND t.open_price = #{openPrice}
+			</if>
+
+			<if test="closePrice != null  ">
+				AND t.close_price = #{closePrice}
+			</if>
+
+			<if test="maxPrice != null  ">
+				AND t.max_price = #{maxPrice}
+			</if>
+
+			<if test="minPrice != null  ">
+				AND t.min_price = #{minPrice}
+			</if>
+
+			<if test="nums != null ">
+				AND t.nums = #{nums}
+			</if>
+
+			<if test="time != null ">
+				AND t.time = #{time}
+			</if>
+			<if test="startTime!=null">
+				and t.time>#{startTime}
+			</if>
+			<if test="endTime!=null">
+				<![CDATA[and t.time<=#{endTime}]]>
+			</if>
+
+			<if test="tradeId != null and tradeId &gt; -2">
+				AND t.trade_id = #{tradeId}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+	<select id="queryDataByType" resultType="com.liuqi.business.dto.KDto">
+		select t.time as date,t.open_price as open,t.close_price as close,t.max_price as high,t.min_price as low,t.nums as volume
+		from  t_k_data t
+		where t.type = #{type}
+		AND t.trade_id = #{tradeId}
+		<if test="startTime!=null">
+			AND t.time >= #{startTime}
+		</if>
+		<if test="endTime!=null">
+			<![CDATA[AND t.time < #{endTime}]]>
+		</if>
+	</select>
+
+	<select id="getLastData" resultMap="kDataDto">
+		select <include refid="allColumn"></include>
+		from  t_k_data t
+		where t.type = #{type}
+		AND t.trade_id = #{tradeId}
+		order by t.time desc limit 1
+	</select>
+
+
+	<select id="getKByDate" resultMap="kDataDto">
+		select <include refid="allColumn"></include>
+		from  t_k_data t
+		where t.type = #{type}
+		AND t.trade_id = #{tradeId}
+		and t.time=#{date}
+	</select>
+
+</mapper>

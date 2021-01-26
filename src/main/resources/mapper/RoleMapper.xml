@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.RoleMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.name,t.en_name
+		</trim>
+	</sql>
+
+	<!-- 数据库和实体映射-->
+	<resultMap type="roleModel" id="role">
+	    <result property="id" column="id"/>
+	    <result property="updateTime" column="update_time"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="remark" column="remark"/>
+	    <result property="version" column="version"/>
+		<result property="name" column="name"/>
+		<result property="enName" column="en_name"/>
+	</resultMap>
+	<resultMap type="roleModelDto" extends="role" id="roleDto">
+
+	</resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="roleModel">
+		insert into t_role(
+		<trim  suffixOverrides=",">
+			update_time,create_time,remark,version,
+			name,en_name,
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{name},#{enName},
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="roleModel">
+		update  t_role
+		<set>
+		    <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+		    <if test="remark != null">
+                remark = #{remark},
+            </if>
+		    <if test="version != null">
+                version = #{version},
+            </if>
+	            <if test="name != null">
+                    name = #{name},
+            </if>
+			<if test="enName != null">
+				en_name = #{enName},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<!-- 查询 -->
+	<select id="getById" resultMap="roleDto">
+		select <include refid="allColumn"></include> 
+		from  t_role t 
+		where t.id = #{id}
+		
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="roleDto">
+		select <include refid="allColumn"></include> 
+		from  t_role t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="roleModelDto" resultMap="roleDto">
+		select <include refid="allColumn"></include> 
+		from  t_role t
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null  ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null   ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null   ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="name != null and  name != '' ">
+				AND t.name = #{name}
+			</if>
+			<if test="enName != null and  enName != '' ">
+				AND t.en_name = #{enName}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+
+
+</mapper>

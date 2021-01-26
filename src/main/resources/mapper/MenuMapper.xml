@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.MenuMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.url,t.parent_id,t.name,t.position,			
+		</trim>
+	</sql>
+
+	<!-- 数据库和实体映射-->
+	<resultMap type="menuModel" id="menu">
+	    <result property="id" column="id"/>
+	    <result property="updateTime" column="update_time"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="remark" column="remark"/>
+	    <result property="version" column="version"/>
+		<result property="url" column="url"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="name" column="name"/>
+		<result property="position" column="position"/>
+	</resultMap>
+
+	<resultMap type="menuModelDto" extends="menu" id="menuDto">
+		<result property="parentName" column="parentName"/>
+	</resultMap>
+
+	<resultMap type="menuModelDto" extends="menuDto" id="menuAndPermissionResult" >
+		<collection property="permissions" ofType="permissionModel">
+			<result property="id" column="pId"/>
+			<result property="menuId" column="menu_id"/>
+			<result property="permissionName" column="permission_name"/>
+			<result property="methodName" column="method_name"/>
+		</collection>
+	</resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="menuModel">
+		insert into t_menu(
+		<trim  suffixOverrides=",">
+			update_time,create_time,remark,version,
+			url,parent_id,name,position,
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{url},#{parentId},#{name},#{position},			
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="menuModel">
+		update  t_menu
+		<set>
+		    <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+		    <if test="remark != null">
+                remark = #{remark},
+            </if>
+		    <if test="version != null">
+                version = #{version},
+            </if>
+	            <if test="url != null">
+                    url = #{url},
+            </if>
+            <if test="parentId != null">
+                    parent_id = #{parentId},
+            </if>
+            <if test="name != null">
+                    name = #{name},
+            </if>
+            <if test="position != null">
+                    position = #{position},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="menuDto">
+		select <include refid="allColumn"></include> 
+		from  t_menu t 
+		where t.id = #{id}
+		
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="menuDto">
+		select <include refid="allColumn"></include> 
+		from  t_menu t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="menuModelDto" resultMap="menuDto">
+		select <include refid="allColumn"></include> ,m1.name as  parentName
+		from  t_menu t
+		left join t_menu m1
+		on t.parent_id=m1.id
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null  ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="url != null and  url != '' ">
+				AND t.url = #{url}
+			</if>
+
+			<if test="parentId != null  and parentId &gt; -2">
+				AND t.parent_id = #{parentId}
+			</if>
+
+			<if test="name != null and  name != '' ">
+				AND t.name = #{name}
+			</if>
+
+			<if test="nameLike != null and  nameLike != '' ">
+				AND t.name = concat('%',#{name},'%')
+			</if>
+
+			<if test="position != null and position &gt; -2">
+				AND t.position = #{position}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+
+	<select id="findByParentId" resultMap="menuDto">
+		select m.id,m.url,
+		m.parent_id as parentId,
+		m.position,
+		m.name,
+		m1.name as  parentName
+		from t_menu m
+		left join t_menu m1
+		on m.parent_id=m1.id
+		where m.parent_id=#{parentId} order by m.position asc
+	</select>
+
+
+	<select id="findFirstLevel" resultMap="menuDto">
+		select m.id,m.url,
+		m.parent_id as parentId,
+		m.position,
+		m.name,
+		m1.name as  parentName
+		from t_menu m
+		left join t_menu m1
+		on m.parent_id=m1.id
+		where m.parent_id is null
+		order by m.position asc
+	</select>
+
+	<select id="getByRoleId" resultType="long">
+		select m.id
+		from t_menu m
+		join t_role_menu rm
+		on m.id=rm.menu_id
+		where rm.role_id=#{roleId}
+	</select>
+	<select id="getInfoByRoleId" resultMap="menuDto">
+		select m.*
+		from t_menu m
+		join t_role_menu rm
+		on m.id=rm.menu_id
+		where rm.role_id=#{roleId}
+	</select>
+
+
+	<select id="queryMenuAndPermission"  resultMap="menuAndPermissionResult">
+		select <include refid="allColumn"></include>,
+		p.id as pId,p.menu_id,p.permission_name,p.method_name
+		from  t_menu t
+		left join t_permission p
+		on t.id=p.menu_id
+		<trim prefix="where" prefixOverrides="AND|OR">
+			<if test="parentId != null  and  parentId &gt; -2">
+			 	AND t.parent_id=#{parentId}
+			</if>
+			<if test="menuId != null ">
+				AND t.menu_id = #{menuId}
+			</if>
+			<if test="id != null  ">
+				AND t.id = #{id}
+			</if>
+		</trim>
+		order by t.position asc
+	</select>
+
+	<select id="getAllChild"  resultMap="menuDto">
+		select <include refid="allColumn"></include>
+		from  t_menu t where parent_id>0
+	</select>
+</mapper>

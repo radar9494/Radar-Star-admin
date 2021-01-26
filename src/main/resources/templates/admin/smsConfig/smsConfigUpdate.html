@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=短信配置">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label">开关:</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" th:checked="${m.onoff==1}" lay-filter="onoffShow" lay-skin="switch" lay-text="ON|OFF">
+                    <input type="hidden" id="onoff" name="onoff">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">每分钟条数:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="minute"  autocomplete="off"  class="layui-input" th:value="${m.minute}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">每小时条数:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="hour"  autocomplete="off"  class="layui-input" th:value="${m.hour}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">每天时条数:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="day"  autocomplete="off"  class="layui-input" th:value="${m.day}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">签名:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sign"  autocomplete="off"  class="layui-input" th:value="${m.sign}">
+                </div>
+            </div>
+            <!--<div class="layui-form-item">
+                <label class="layui-form-label">国内key:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="key"  autocomplete="off"  class="layui-input" th:value="${m.key}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">国内私钥:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="secret"  autocomplete="off"  class="layui-input" th:value="${m.secret}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">国际key:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="gjkey"  autocomplete="off"  class="layui-input" th:value="${m.gjkey}">
+                </div>
+            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件区域:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="emailRegionId"  autocomplete="off"  class="layui-input" th:value="${m.emailRegionId}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件AccessKeyId:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="emailAccessKeyId"  autocomplete="off"  class="layui-input" th:value="${m.emailAccessKeyId}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件Secret:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="emailSecret"  autocomplete="off"  class="layui-input" th:value="${m.emailSecret}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件账号:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="emailAccountName"  autocomplete="off"  class="layui-input" th:value="${m.emailAccountName}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件标签:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="emailTag"  autocomplete="off"  class="layui-input" th:value="${m.emailTag}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+        var form = layui.form,
+            liuQi = layui.liuQi,
+            laydate = layui.laydate;
+
+        //日期
+        form.render();
+
+        //监听指定开关
+        form.on('switch(onoffShow)', function(data){
+            $("#onoff").val(this.checked?1:0);
+        });
+        //自定义验证规则
+        form.verify({
+        });
+        //监听提交
+        form.on('submit(formSubmit)', function (data) {
+            data=data.field;
+            liuQi.ajax("/admin/smsConfig/update",data,
+                function (data) {
+                    //关闭
+                    layer.msg(data.msg);
+                }
+            );
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

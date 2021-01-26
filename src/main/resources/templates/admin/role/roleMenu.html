@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=角色关联">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div style="position: fixed;z-index: 10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input"  placeholder="" th:value="${m.name}"  autocomplete="off" readonly="readonly">
+                    <input type="hidden" th:value="${m.id}" name="roleId" id="roleId">
+                </div>
+                <div class="layui-input-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+            <div style=" height:300px; padding-top: 20px;padding-bottom:20px;overflow-y: auto">
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <div th:each="fmenu,fmenuState:${array}">
+                            <input type="checkbox" lay-skin="primary" th:checked="${fmenu.selected}" mtype="m" th:id="${fmenu.id}" th:title="${fmenu.title}" lay-filter="totalMenu"/>
+                            <div th:each="smenu,smenuState:${fmenu.child}" style="margin-left: 50px;">
+                                <input type="checkbox" lay-skin="primary"  th:checked="${smenu.selected}" mtype="m"  th:id="${smenu.id}" th:attr="parent=${smenu.parentId}" th:title="${smenu.title}"/>
+                                <div th:each="p,pState:${smenu.permissions}" style="margin-left: 50px;display: inline" >
+                                    <input type="checkbox" lay-skin="primary"  th:id="${p.id}" mtype="p"  th:attr="parent=${smenu.parentId+'-'+smenu.id}" th:checked="${#lists.contains(plist, p.id)}" th:title="${p.methodName}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+        layui.use(['form','jquery','liuQi'], function () {
+            var $ = layui.jquery,
+                form = layui.form,
+                liuQi = layui.liuQi;
+
+            form.render();
+
+            form.on('checkbox(totalMenu)', function(data){
+                var id=data.elem.id;
+                var mtype=$(data.elem).attr("mtype");
+                //选中状态
+                var checked=data.elem.checked;
+                var parentId = $(data.elem).attr("parent");
+                if(mtype=="m"){//菜单操作
+                    if(parentId==undefined){ //一级菜单操作
+                        if(checked) {
+                            //所有都选中
+                            $(data.elem).parent().find("input").prop("checked",true);
+                        }else{
+                            //所有都取消
+                            $(data.elem).parent().find("input").prop("checked", false);
+                        }
+                    }else{//二级菜单操作
+                        if(checked) {
+                            //父类选中
+                            $("#" + parentId).prop("checked", true);
+                            $(data.elem).parent().find("input").prop("checked",true);
+                        }else{
+                            //下级全部取消
+                            $(data.elem).parent().find("input").prop("checked",false);
+                            //查询不包含自己的所有下级
+                            var count=$(data.elem).parent().parent().find("input:checked").not($("#"+parentId)).length;
+                            if(count<1){
+                                $("#"+parentId).prop("checked",false);
+                            }
+
+                        }
+                    }
+                }else{//权限操作
+                    var parent=parentId.split("-");
+                    if(checked) {//选中
+                        //上级和上上级都选中
+                        $("#" + parent[0]).prop("checked", true);
+                        $("#" + parent[1]).prop("checked", true);
+                    }else{
+                        //判断上级是否取消
+                        var count1=$(this).parent().parent().find("input:checked").not($("#"+parent[1])).length;
+                        if(count1<1){
+                            $("#"+parent[1]).prop("checked",false);
+                        }
+                        //判断上上级是否取消
+                        var count2=$(this).parent().parent().parent().find("input:checked").not($("#"+parent[0])).length;
+                        if(count2<1){
+                            $("#"+parent[0]).prop("checked",false);
+                        }
+                    }
+                }
+                form.render();
+            });
+
+            form.on('submit(formSubmit)',function (data) {
+                var mArr=[];//菜单
+                var pArr=[];//权限
+                $("input[type='checkbox']:checked").each(function(){
+                    if($(this).attr("mtype")=="m"){
+                        mArr.push($(this).attr("id"))
+                    }else{
+                        pArr.push($(this).attr("id"))
+                    }
+
+                });
+                var roleId=$("#roleId").val();
+                liuQi.ajax("/admin/role/menuRel",{"roleId":roleId,"menus":mArr.join(","),"permissions":pArr.join(",")},
+                    function (data) {
+                        //关闭
+                        parent.layer.msg(data.msg);
+                        parent.layui.table.reload('currentTableId');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+
+                });
+                return false;
+            });
+        });
+
+
+</script>
+
+</body>
+</html>

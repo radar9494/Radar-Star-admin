@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+	<logger name="org.springframework.web" level="INFO"/>
+
+	<!-- mybatis日志打印 -->
+	<logger name="com.ibatis" level="INFO"/>
+	<logger name="com.ibatis.common.jdbc.SimpleDataSource" level="INFO"/>
+	<logger name="com.ibatis.common.jdbc.ScriptRunner" level="INFO"/>
+	<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="INFO"/>
+	<logger name="com.liuqi.business.mapper" level="INFO"/>
+
+
+	<appender name="autoLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>log/auto-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- 日志最大的历史 7天 -->
+			<maxHistory>3</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="apiLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>log/api-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- 日志最大的历史 7天 -->
+			<maxHistory>3</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger uri:[%X{uri}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="tradeLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>log/trade-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- 日志最大的历史 7天 -->
+			<maxHistory>3</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger uri:[%X{uri}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="autoTaskLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>log/autoTask-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- 日志最大的历史 7天 -->
+			<maxHistory>3</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger uri:[%X{uri}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="api" level="INFO">
+		<appender-ref ref="apiLogger" />
+	</logger>
+	<logger name="autoTask" level="INFO">
+		<appender-ref ref="autoTaskLogger" />
+	</logger>
+	<logger name="auto" level="INFO">
+		<appender-ref ref="autoLogger" />
+	</logger>
+	<logger name="trade" level="ERROR">
+		<appender-ref ref="tradeLogger" />
+	</logger>
+
+</configuration>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=币种配置编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>币种:</label>
+                    <div class="layui-input-inline">
+                            <input type="text"  class="layui-input" th:value="${ m.currencyName}">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>充值地址:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="rechargeAddress" name="rechargeAddress" autocomplete="off"  class="layui-input" th:value="${ m.rechargeAddress}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">充值开关:</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" th:checked="${ m.rechargeSwitch==1}" lay-filter="rechargeSwitchShow" lay-skin="switch" lay-text="ON|OFF">
+                        <input type="hidden" id="rechargeSwitch" name="rechargeSwitch">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>充值最小数量:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="rechargeMinQuantity" name="rechargeMinQuantity" lay-verify="required|rechargeMinQuantity" autocomplete="off"  class="layui-input" th:value="${#numbers.formatDecimal(m.rechargeMinQuantity,1,8)}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>提币开关:</label>
+                    <div class="layui-input-block">
+                            <input type="checkbox" th:checked="${ m.extractSwitch==1}" lay-filter="extractSwitchShow" lay-skin="switch" lay-text="ON|OFF">
+                            <input type="hidden" id="extractSwitch" name="extractSwitch">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>最低提币数量:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="extractMin" name="extractMin" lay-verify="required|extractMin" autocomplete="off"  class="layui-input" th:value="${#numbers.formatDecimal(m.extractMin,1,8)}">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>最高提币数量:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="extractMax" name="extractMax" lay-verify="required|extractMax" autocomplete="off"  class="layui-input" th:value="${#numbers.formatDecimal(m.extractMax,1,8)}">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>提币每天最大数量开关:</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" th:checked="${ m.extractMaxDaySwitch==1}" lay-filter="extractMaxDaySwitchShow" lay-skin="switch" lay-text="ON|OFF">
+                        <input type="hidden" id="extractMaxDaySwitch" name="extractMaxDaySwitch">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>提币每天最大数量:</label>
+                    <div class="layui-input-inline">
+                            <input type="text" id="extractMaxDay" name="extractMaxDay" lay-verify="required|extractMaxDay" autocomplete="off"  class="layui-input" th:value="${#numbers.formatDecimal(m.extractMaxDay,1,8)}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>是否百分比:</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" th:checked="${ m.percentage==1}" lay-filter="percentageShow" lay-skin="switch" lay-text="ON|OFF">
+                        <input type="hidden" id="percentage" name="percentage">
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>提币手续费:</label>
+                    <div class="layui-input-inline">
+                            <input type="text" id="extractRate" name="extractRate" lay-verify="required|extractRate" autocomplete="off"  class="layui-input" th:value="${#numbers.formatDecimal(m.extractRate,1,8)}">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>充提操作:</label>
+                    <div class="layui-input-block">
+                            <input type="radio" th:each="t,tState:${ walletTypeList}" th:value="${t.key}" lay-verify="otherReq" name="walletType" th:title="${t.name}" th:checked="${ t.key == m.walletType}">
+                    </div>
+                </div>
+
+            <label class="layui-form-label"><span style="color: red">*</span>手续费币种:</label>
+            <div class="layui-input-inline">
+                <select lay-verify="required|currencyId" id="rateCurrencyId" name="rateCurrencyId" lay-filter="currencyIdS">
+                    <option value="">请选择</option>
+                    <option th:each="t,tState:${ currencyList}" th:value="${t.id}" th:text="${t.name}"  th:selected="${t.id==m.rateCurrencyId}" ></option>
+                </select>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+
+            //日期
+            form.on('switch(extractSwitchShow)', function(data){
+                $("#extractSwitch").val(this.checked?1:0);
+            });
+            form.on('switch(extractMaxDaySwitchShow)', function(data){
+                $("#extractMaxDaySwitch").val(this.checked?1:0);
+            });
+            form.on('switch(percentageShow)', function(data){
+                $("#percentage").val(this.checked?1:0);
+            });
+            form.on('switch(rechargeSwitchShow)', function(data){
+                $("#rechargeSwitch").val(this.checked?1:0);
+            });
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                //radio验证
+                otherReq: function(value,item){
+                    var $ = layui.$;
+                    var verifyName=$(item).attr('name')
+                            , verifyType=$(item).attr('type')
+                            ,formElem=$(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                            ,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                            ,isTrue= verifyElem.is(':checked')//是否命中校验
+                            ,focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                    if(!isTrue || !value){
+                        //定位焦点
+                        focusElem.css(verifyType=='radio'?{"color":"#FF5722"}:{"border-color":"#FF5722"});
+                        //对非输入框设置焦点
+                        focusElem.first().attr("tabIndex","1").css("outline","0").blur(function() {
+                            focusElem.css(verifyType=='radio'?{"color":""}:{"border-color":""});
+                        }).focus();
+                        return '必填项不能为空';
+                    }
+                },
+                currencyId: function (value) {
+                },
+                extractSwitch: function (value) {
+                },
+                extractMaxDay: function (value) {
+                },
+                extractMaxDaySwitch: function (value) {
+                },
+                extractRate: function (value) {
+                },
+                percentage: function (value) {
+                },
+                extractMin: function (value) {
+                },
+                extractMax: function (value) {
+                },
+                rechargeSwitch: function (value) {
+                },
+                rechargeMinQuantity: function (value) {
+                },
+                rechargeAddress: function (value) {
+                },
+                walletType: function (value) {
+                },
+            });
+        //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/currencyConfig/update",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+        });
+</script>
+
+</body>
+</html>

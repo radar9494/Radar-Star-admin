@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=添加OTC日志记录">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label">申诉方:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${record.appealTypeStr}" disabled="disabled" class="layui-input">
+                </div>
+                <label class="layui-form-label">申诉用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${record.appealUserName}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">买用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${record.buyUserName}" disabled="disabled" class="layui-input">
+                </div>
+                <label class="layui-form-label">卖用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${record.sellUserName}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">理由:</label>
+                <div class="layui-input-block">
+                    <input th:value="${record.appealContent}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>回复:</label>
+                <div class="layui-input-block">
+                    <input name="remark" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ record.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="appealSuccess">申诉成功</button>
+                    <button class="layui-btn" lay-submit="" lay-filter="appealFail">申诉失败</button>
+                </div>
+            </div>
+            <table class="layui-table">
+                <thead>
+                <tr class="text-c">
+                    <th width="80">创建时间</th>
+                    <th width="50">操作用户</th>
+                    <th width="100">内容</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item:${list}">
+                    <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${item.remark}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+        var form = layui.form,
+            liuQi = layui.liuQi,
+            laydate = layui.laydate;
+        form.render();
+        //监听提交
+        form.on('submit(appealSuccess)', function (data) {
+            data=data.field;
+            layer.confirm("是否申诉成功?",function (obj) {
+                liuQi.ajax("/admin/otcOrderRecord/appealSuccess",data,
+                    function (data) {
+                        //关闭
+                        parent.layer.msg(data.msg);
+                        parent.layui.table.reload('currentTableId');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }
+                );
+            });
+            return false;
+        });
+
+        form.on('submit(appealFail)', function (data) {
+            data=data.field;
+            layer.confirm("是否申诉失败?",function (obj) {
+                liuQi.ajax("/admin/otcOrderRecord/appealFail",data,
+                    function (data) {
+                        //关闭
+                        parent.layer.msg(data.msg);
+                        parent.layui.table.reload('currentTableId');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }
+                );
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=经销商列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="status" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ statusList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <div class="layui-btn-group">
+            <button class="layui-btn layui-btn-sm data-add-btn">添加</button>
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="modifyPwd">修改密码</a>
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/userSys/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'name', title: '名称',align: "center"},
+                    {field: 'statusStr', title: '状态',align: "center",
+                        templet: function (d) {
+                            //原始按钮:layui-btn-primary    默认按钮:layui-btn    百搭按钮:layui-btn-normal
+                            //暖色按钮:layui-btn-warm       警告按钮:layui-btn-danger   禁用按钮:layui-btn-disabled
+                            var type="layui-btn-primary";
+                            if(d.status==0 ){
+                                type="layui-btn-warm";
+                            }else if(d.status==2 ){
+                                type="layui-btn-danger";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.statusStr+"</a>";
+                        }
+                    },
+                    {field: 'currencyName', title: '币种',align: "center"},
+                    {field: 'createTime', title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                    {title: '操作', width: '10%', templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/admin/userSys/exportExc',params);
+                return false;
+            });
+
+
+            // 监听添加操作
+            $(".data-add-btn").on("click", function () {
+                //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+                liuQi.openDialog('/admin/userSys/toAdd',{},"添加管理员",'50','60');
+            });
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'edit') {
+                    //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+                    liuQi.openDialog('/admin/userSys/toUpdate',{"id":data.id},"编辑",'50','');
+                }else if (obj.event === 'modifyPwd') {
+                    liuQi.openDialog('/admin/user/toModifyPwd',{"id":data.id},"修改密码",'40','40');
+                }
+            });
+        });
+</script>
+</body>
+</html>

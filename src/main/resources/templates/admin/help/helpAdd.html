@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=帮助中心添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item" id="parentM">
+                <label class="layui-form-label"><span style="color: red">*</span>类型:</label>
+                <input type="hidden" id="maxLevel" value="0">
+                <input type="hidden" id="typeId" name="typeId">
+                <div class="layui-input-inline" id="parent1">
+                    <select class="layui-select" id="parentId1" name="parentId1" lay-filter="getType">
+                        <option value="">请选择</option>
+                        <option th:each="t,tState:${ typeList}" th:value="${t.id}" th:text="${t.name}" ></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>标题:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="title" name="title"  lay-verify="required|title" autocomplete="off" placeholder="标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>内容:</label>
+                <div class="layui-input-block">
+                    <textarea name="content" lay-verify="content" id="contentEditor"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>状态:</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" lay-filter="statusShow" lay-skin="switch" lay-text="启用|不启用">
+                    <input type="hidden" id="status" name="status" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                    liuQi = layui.liuQi,
+                    layedit = layui.layedit,
+                    laydate = layui.laydate;
+
+            form.on('switch(statusShow)', function(data){
+                $("#status").val(this.checked?1:0);
+            });
+            layedit.set({
+                //暴露layupload参数设置接口 --详细查看layupload参数说明
+                uploadImage: {
+                    url: '/search/fileUpload',
+                    accept: 'image',
+                    acceptMime: 'image/*',
+                    exts: 'jpg|png|gif|bmp|jpeg',
+                    size: 1024 * 10,
+                }
+                , uploadVideo: {
+                    url: '/search/fileUpload',
+                    accept: 'video',
+                    acceptMime: 'video/*',
+                    exts: 'mp4|flv|avi|rm|rmvb',
+                    size: 1024 * 10 * 2,
+                }
+                , uploadFiles: {
+                    url: '/search/fileUpload',
+                    accept: 'file',
+                    acceptMime: 'file/*',
+                    size: '20480',
+                }
+                //右键删除图片/视频时的回调参数，post到后台删除服务器文件等操作，
+                //传递参数：
+                //图片： imgpath --图片路径
+                //视频： filepath --视频路径 imgpath --封面路径
+                , calldel: {
+                    url: '/search/fileUpload',
+                }
+                //开发者模式 --默认为false
+                , devmode: false
+                //插入代码设置 --hide:true 等同于不配置codeConfig
+                , codeConfig: {
+                    hide: false,  //是否显示编码语言选择框
+                    default: 'javascript' //hide为true时的默认语言格式
+                }
+                //插入自定义链接
+                , customlink:{
+                    title: '插入layui官网'
+                    , href: 'https://www.layui.com'
+                    ,onmouseup:''
+                }
+                , videoAttr: ' preload="none" '
+                , tool: [
+                    'html', 'undo', 'redo', 'code', 'strong', 'italic', 'underline', 'del', 'addhr', '|', 'fontFomatt', 'fontfamily','fontSize', 'fontBackColor', 'colorpicker', 'face'
+                    , '|', 'left', 'center', 'right', '|', 'link', 'unlink', 'images', 'image_alt', 'video','attachment', 'anchors'
+                    , '|'
+                    , 'table','customlink'
+                    , 'fullScreen'
+                ]
+                , height: '600px'
+            });
+            var index=layedit.build('contentEditor');
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                typeId: function (value) {
+                },
+                title: function (value) {
+                },
+                content: function (value) {
+                    //不添加  富文本提交无值
+                    layedit.sync(index);
+                },
+                status: function (value) {
+                },
+            });
+
+        form.on('select(getType)',function(data){
+            //获取当前id
+            var typeId=data.value;
+            var num=parseInt(data.elem.id.replace("parentId",""));
+            var maxLevel= $("#maxLevel").val();
+            if(maxLevel>num){
+                for(var level=num+1;level<=maxLevel;level++){
+                    $("#parent"+level).remove();
+                }
+                form.render();
+            }
+            var newNum=num+1;
+            $("#maxLevel").val(newNum);
+
+            if(typeId>0){
+                $("#typeId").val(typeId);
+                $.ajax({
+                    url:"/admin/helpType/getByTypeId",
+                    data:{"typeId":typeId},
+                    dataType:"json",
+                    success:function(data){
+                        if(data.code==0){
+                            var arr="";
+                            if(data.obj.length>0){
+                                for(var i=0;i<data.obj.length;i++){
+                                    arr+="<option value='"+data.obj[i].id+"'>"+data.obj[i].name+"</option>";
+                                }
+                                var html="<div class='layui-input-inline' id='parent"+newNum+"'>" +
+                                    "                    <select class='layui-select' id='parentId"+newNum+"' name='parentId"+newNum+"' lay-filter='getType'>" +
+                                    "                        <option value=''>请选择</option>" +arr;
+                                "                    </select>" +
+                                "                </span>";
+                                "      </div>";
+                                $("#parentM").append(html);
+                                form.render();
+                            }
+                        }
+                    }
+                });
+            }else{
+                var typeId=$("#parentId"+(num-1)).val();
+                if(typeId==undefined){
+                    typeId=0;
+                }
+                $("#typeId").val(typeId);
+            }
+        });
+
+
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/help/add",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+    });
+</script>
+
+</body>
+</html>

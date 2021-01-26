@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=otc添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>币种id:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="currencyId" name="currencyId"  lay-verify="required|currencyId" autocomplete="off" placeholder="币种id" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>金额:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="money" name="money"  lay-verify="required|money" autocomplete="off" placeholder="金额" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>类型:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="type" name="type"  lay-verify="required|type" autocomplete="off" placeholder="类型" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>余额:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="balance" name="balance"  lay-verify="required|balance" autocomplete="off" placeholder="余额" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>快照:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="snapshot" name="snapshot"  lay-verify="required|snapshot" autocomplete="off" placeholder="快照" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>订单id:</label>
+                <div class="layui-input-block">
+                    <input type="text" id="orderId" name="orderId"  lay-verify="required|orderId" autocomplete="off" placeholder="订单id" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+
+    layui.use(['laydate', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                    liuQi = layui.liuQi,
+                    laydate = layui.laydate;
+
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                //radio验证
+                otherReq: function(value,item){
+                    var $ = layui.$;
+                    var verifyName=$(item).attr('name')
+                            , verifyType=$(item).attr('type')
+                            ,formElem=$(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                            ,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                            ,isTrue= verifyElem.is(':checked')//是否命中校验
+                            ,focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                    if(!isTrue || !value){
+                        //定位焦点
+                        focusElem.css(verifyType=='radio'?{"color":"#FF5722"}:{"border-color":"#FF5722"});
+                        //对非输入框设置焦点
+                        focusElem.first().attr("tabIndex","1").css("outline","0").blur(function() {
+                            focusElem.css(verifyType=='radio'?{"color":""}:{"border-color":""});
+                        }).focus();
+                        return '必填项不能为空';
+                    }
+                },
+                currencyId: function (value) {
+                },
+                money: function (value) {
+                },
+                type: function (value) {
+                },
+                balance: function (value) {
+                },
+                snapshot: function (value) {
+                },
+                orderId: function (value) {
+                },
+            })
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/otcWalletLog/add",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+    });
+</script>
+
+</body>
+</html>

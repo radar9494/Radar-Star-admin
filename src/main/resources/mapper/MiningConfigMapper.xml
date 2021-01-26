@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.MiningConfigMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.currency_id,t.transfer_min,t.out_min,t.cardinality,t.type,t.static_rate,t.dynamic_rate
+			,t.redemption_usdt,t.out_quantity,t.worst,t.best
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="miningConfigModel" id="miningConfig">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="transferMin" column="transfer_min"/>
+		<result property="outMin" column="out_min"/>
+		<result property="cardinality" column="cardinality"/>
+		<result property="type" column="type"/>
+		<result property="staticRate" column="static_rate"/>
+		<result property="dynamicRate" column="dynamic_rate"/>
+		<result property="redemptionUsdt" column="redemption_usdt"/>
+		<result property="outQuantity" column="out_quantity"/>
+		<result property="worst" column="worst"/>
+		<result property="best" column="best"/>
+
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="miningConfigModelDto" extends="miningConfig" id="miningConfigDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="miningConfigModel">
+		insert into t_mining_config(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="currencyId != null">`currency_id`,</if>
+				<if test="transferMin != null">`transfer_min`,</if>
+				<if test="outMin != null">`out_min`,</if>
+				<if test="cardinality != null">`cardinality`,</if>
+				<if test="type != null">`type`,</if>
+				<if test="staticRate != null">`static_rate`,</if>
+				<if test="dynamicRate != null">`dynamic_rate`,</if>
+				<if test="redemptionUsdt != null">`redemption_usdt`,</if>
+				<if test="outQuantity != null">`out_quantity`,</if>
+				<if test="worst != null">`worst`,</if>
+				<if test="best != null">`best`,</if>
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="currencyId != null">#{currencyId},</if>
+				<if test="transferMin != null">#{transferMin},</if>
+				<if test="outMin != null">#{outMin},</if>
+		    	<if test="cardinality != null">#{cardinality},</if>
+				<if test="type != null">#{type},</if>
+				<if test="staticRate != null">#{staticRate},</if>
+				<if test="dynamicRate != null">#{dynamicRate},</if>
+				<if test="redemptionUsdt != null">#{redemptionUsdt},</if>
+				<if test="outQuantity != null">#{outQuantity},</if>
+				<if test="worst != null">#{worst},</if>
+				<if test="best != null">#{best},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="miningConfigModel">
+		update  t_mining_config
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="transferMin != null">
+                    `transfer_min` = #{transferMin},
+            </if>
+            <if test="outMin != null">
+                    `out_min` = #{outMin},
+            </if>
+			<if test="cardinality != null">
+                    `cardinality` = #{cardinality},
+            </if>
+			<if test="type != null">
+				`type` = #{type},
+			</if>
+			<if test="staticRate != null">
+				`static_rate` = #{staticRate},
+			</if>
+			<if test="dynamicRate != null">
+				`dynamic_rate` = #{dynamicRate},
+			</if>
+			<if test="redemptionUsdt != null">
+				`redemption_usdt` = #{redemptionUsdt},
+			</if>
+			<if test="outQuantity != null">
+				`out_quantity` = #{outQuantity},
+			</if>
+			<if test="worst != null">
+				`worst` = #{worst},
+			</if>
+			<if test="best != null">
+				`best` = #{best},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="miningConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_mining_config t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="miningConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_mining_config t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="miningConfigModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="miningConfigModelDto" resultMap="miningConfigDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_mining_config t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null and  id != ''   ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null and  createTime != ''   ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null and  updateTime != ''   ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null and  version != ''   ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="currencyId != null and  currencyId != ''   ">
+				AND t.currency_id = #{currencyId}
+            </if>
+	
+			<if test="transferMin != null and  transferMin != ''   ">
+				AND t.transfer_min = #{transferMin}
+            </if>
+			<if test="outMin != null and  outMin != ''  ">
+				AND t.out_min = #{outMin}
+            </if>
+
+
+			<if test="type != null   ">
+				AND t.type = #{type}
+			</if>
+
+			<if test="cardinality != null and  cardinality != ''  ">
+				AND t.cardinality = #{cardinality}
+            </if>
+			
+            <if test="startCreateTime!=null">
+                and t.create_time>#{startCreateTime}
+            </if>
+            <if test="endCreateTime!=null">
+                <![CDATA[and t.create_time<=#{endCreateTime}]]>
+            </if>
+        </trim>
+	</sql>
+</mapper>

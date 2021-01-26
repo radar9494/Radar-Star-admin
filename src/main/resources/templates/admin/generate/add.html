@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=管理员添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red">*</span>表</label>
+                            <div class="layui-input-inline">
+                                <select class="select" id="tableName" name="tableName" lay-filter="tableSelect" required lay-search="">
+                                    <option value="">请选择生成的表</option>
+                                    <option th:each="t,tState:${tables}" th:value="${t.tableName}" th:text="${t.tableName}" th:showId="${t.tableName}" th:showName="${t.tableName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red">*</span>模块名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="moduleName" name="moduleName" required placeholder="模块名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red">*</span>生成地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="address" name="address" th:value="${address}" required placeholder="项目根目录" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">生成代码</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" value="1" name="types" checked="checked" title="entity">
+                                <input type="checkbox" value="2" name="types" checked="checked" title="xml">
+                                <input type="checkbox" value="3" name="types" checked="checked" title="mapper">
+                                <input type="checkbox" value="4" name="types" checked="checked" title="service">
+                                <input type="checkbox" value="5" name="types" checked="checked" title="controller">
+                                <input type="checkbox" value="6" name="types" checked="checked" title="list">
+                                <input type="checkbox" value="7" name="types" checked="checked" title="add">
+                                <input type="checkbox" value="8" name="types" checked="checked" title="update">
+                                <input type="checkbox" value="9" name="types" title="view">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="formSubmit">生成代码</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-table" id="dataTable">
+            <thead>
+                <tr class="text-c">
+                    <th width="80">表字段</th>
+                    <th width="80">备注</th>
+                    <th width="80">实体字段</th>
+                    <th width="80">实体类型</th>
+                    <th width="80">增改类型</th>
+                    <th width="50">枚举</th>
+                    <th width="160">枚举类型</th>
+                    <th width="50">前台查询</th>
+                    <th width="80">查询类型</th>
+                </tr>
+            </thead>
+            <tbody id="columns">
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+    <div id="sql"></div>
+</div>
+
+<script>
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+
+
+            //日期
+            laydate.render({
+                elem: '#createTime',
+                type:'datetime'
+            });
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                name: function (value) {
+                    if (value.length < 2) {
+                        return '标题至少得2个字符啊';
+                    }
+                }
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+            });
+
+            form.on('select(tableSelect)', function(data){
+                tableName=data.value; //得到被选中的值
+                getColumns(tableName);
+            });
+
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                var tableName=$("#tableName").val();
+                var moduleName=$("#moduleName").val();
+                var address=$("#address").val();
+                var types= [];
+                $("input[name='types']:checked").each(function(){
+                    types.push($(this).val())
+                });
+                if(types.length<=0){
+                    layer.msg("请选择需要生成的类型",{icon: 5,time:1000});
+                    return ;
+                }
+                var columns=[];//所有的列信息
+                if(tableName==''||moduleName=='' || address==''){
+                    layer.msg("请先选择表名和输入模块名称和生成地址",{icon: 5,time:1000});
+                    return;
+                }
+                var canContinue=true;
+                $("#columns tr").each(function(){
+                    var td=$(this).find("td");
+                    //获取默认保存的信息
+                    var columnStr=$(td).eq(0).find("input").val();
+                    var column=JSON.parse(columnStr);
+                    //查询
+                    var addUpdateType=$(td).eq(4).find("select option:selected").val();
+                    var enumType=$(td).eq(5).find("input:radio:checked").val();
+                    var enumStr=$(td).eq(6).find("textarea").val();
+                    var frontShow=$(td).eq(7).find("input:radio:checked").val();
+                    var frontQueryType=$(td).eq(8).find("select option:selected").val();
+                    if(enumType==1 && enumStr==''){
+                        layer.msg(column.name+"没有枚举类型",{icon: 5,time:1000});
+                        canContinue=false;
+                        return false;
+                    }
+                    column['addUpdateType']=addUpdateType;
+                    column['enumType']=enumType;
+                    column['enumStr']=enumStr;
+                    column['frontShow']=frontShow;
+                    column['frontQueryType']=frontQueryType;
+                    columns.push(column);
+                });
+                if(!canContinue){
+                    return;
+                }
+
+                liuQi.ajax("/admin/generate/add",
+                    {"tableName":tableName,"moduleName":moduleName,"address":address,"types":JSON.stringify(types),"columnInfo":JSON.stringify(columns)},
+                    function(data){
+                        $("#columns").empty();
+                        $("#sql").html(data.obj);
+                        $("#tableName").val('');
+                        $("#moduleName").val('');
+                        layer.msg(data.msg,{icon: 1,time:1000});
+                });
+                return false;
+            });
+        });
+
+
+    function getColumns(tableName){
+        $("#columns").empty();
+        $("#sql").empty();
+        if(tableName!=''){
+            $.ajax({
+                url:"/admin/generate/getColumns",
+                data:{"tableName":tableName},
+                dataType:"json",
+                success:function(data){
+                    var columns="";
+                    if(data.code==0){
+                        var column={};
+                        for(var i=0;i<data.obj.length;i++){
+                            if(i!=0){
+                                demo="";
+                            }
+                            column=data.obj[i];
+                            columns+="<tr>\n" +
+                                "                <td>"+column.name+"<input type='hidden' id='"+column.name+"' value='"+JSON.stringify(column)+"'></td>\n" +
+                                "                <td>"+column.comment+"</td>\n" +
+                                "                <td>"+column.entityName+"</td>\n" +
+                                "                <td>"+column.entityType+"</td>\n" +
+                                "                <td>\n" +
+                                "                    <select class='layui-select' id='addUpdateType_"+column.name+"' onchange=\"changeUpdate(this,'"+column.name+"')\">\n" +
+                                "                        <option value='1'>input</option>\n" +
+                                "                        <option value='2'>radio</option>\n" +
+                                "                        <option value='3'>select</option>\n" +
+                                "                        <option value='4'>日期</option>\n" +
+                                "                        <option value='5'>开关</option>\n" +
+                                "                        <option value='6'>textArea</option>\n" +
+                                "                    </select>\n" +
+                                "                </td>\n" +
+                                "                <td>\n" +
+                                "                    <input type='radio' class='layui-radio' name='enumType_"+column.name+"' value='0' checked='checked'>否&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+                                "                    <input type='radio' class='layui-radio' name='enumType_"+column.name+"' value='1' onclick=\"toEnum('"+column.name+"','"+column.comment+"')\">是\n" +
+                                "                </td>\n" +
+                                "                <td><textarea class='layui-textarea' id='enum_"+column.name+"' style='width: 100%' readonly onclick=\"toEnum('"+column.name+"','"+column.comment+"')\"></textarea> </td>\n" +
+                                "                <td>\n" +
+                                "                    <input type='radio' class='layui-radio' name='frontShow_"+column.name+"' value='0'  checked='checked'>否&nbsp;&nbsp;&nbsp;&nbsp;\n" +
+                                "                    <input type='radio' class='layui-radio' name='frontShow_"+column.name+"' value='1'>是\n" +
+                                "                </td>\n" +
+                                "                <td>\n" +
+                                "                    <select class='layui-select' id='frontQueryType_"+column.name+"'>\n" +
+                                "                        <option value='1'>input</option>\n" +
+                                "                        <option value='3'>select</option>\n" +
+                                "                        <option value='4'>日期</option>\n" +
+                                "                    </select>\n" +
+                                "                </td>\n" +
+                                "            </tr>"
+                        }
+                    }
+
+                    $("#columns").append(columns);
+                }
+            });
+        }
+    }
+
+    function changeUpdate(that,column){
+        var value=$(that).val();
+        var namef='frontShow_'+column;
+        $("input[name='"+namef+"'][value=1]").prop("checked",true);
+        if(value==2 || value ==3){
+            $("#frontQueryType_"+column).val(3);
+        }else{
+            $("#frontQueryType_"+column).val(value);
+        }
+    }
+
+    function toEnum(column,remark){
+        var name='enumType_'+column;
+        var namef='frontShow_'+column;
+        $("input[name='"+name+"'][value=1]").prop("checked",true);
+        $("input[name='"+namef+"'][value=1]").prop("checked",true);
+        $("#frontQueryType_"+column).val(3);
+        var url="/admin/generate/toAddEnum?columnName="+column+"&remark="+remark;
+        layer.open({
+            type: 2,
+            area: ['70%', '70%'],
+            fix: false, //不固定
+            maxmin: true,
+            shade:0.4,
+            title: "添加枚举",
+            content: url
+        });
+    }
+</script>
+
+</body>
+</html>

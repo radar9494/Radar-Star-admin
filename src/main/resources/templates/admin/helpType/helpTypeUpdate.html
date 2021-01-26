@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=工单类型编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>名称:</label>
+                    <div class="layui-input-block">
+                            <input type="text" id="name" name="name" lay-verify="required|name" autocomplete="off"  class="layui-input" th:value="${ m.name}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">父类:</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" id="parentId" name="parentId" th:value="${m.parentId}">
+                        <label  class="layui-form-label" th:text="${m.parentName}" ></label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>位置:</label>
+                    <div class="layui-input-block">
+                            <input type="text" id="position" name="position" lay-verify="required|position" autocomplete="off"  class="layui-input" th:value="${ m.position}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>状态:</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" th:checked="${m.status==1}" lay-filter="statusShow" lay-skin="switch" lay-text="启用|不启用">
+                        <input type="hidden" id="status" name="status" th:value="${m.status}">
+                    </div>
+                </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+
+            //日期
+            form.render();
+
+            form.on('switch(statusShow)', function(data){
+                $("#status").val(this.checked?1:0);
+            });
+
+            //自定义验证规则
+            form.verify({
+                parentId: function (value) {
+                },
+                name: function (value) {
+                },
+                position: function (value) {
+                },
+                status: function (value) {
+                },
+            });
+        //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/helpType/update",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+        });
+</script>
+
+</body>
+</html>

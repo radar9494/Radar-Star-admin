@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=查询轮播图">
+</head>
+<body>
+<article class="page-container">
+    <form  class="form form-horizontal" id="mainForm">
+        <div class="row cl">
+            <img width="400" class="product-thumb" th:src="${m.id}">
+        </div>
+    </form>
+</article>
+<script type="text/javascript" th:inline="javascript">
+</script>
+</body>
+</html>

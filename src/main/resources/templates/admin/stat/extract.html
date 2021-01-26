@@ -1,0 +1,148 @@
+﻿<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=用户统计">
+</head>
+<body>
+<div class="layuimini-container">
+	<div class="layuimini-main">
+		<fieldset class="layui-elem-field layuimini-search">
+			<legend>搜索信息</legend>
+			<div style="margin: 10px 10px 10px 10px">
+				<form class="layui-form layui-form-pane">
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label">日期</label>
+							<div class="layui-input-inline">
+								<input type="text" name="startDate" id="startDate"   placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-input-inline">
+								<input type="text" name="endDate" id="endDate"  placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-inline">
+							<a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+							<button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</fieldset>
+
+		<div id="container" style="min-width:700px;height:400px"></div>
+		<div class="mt-20">
+			<table id="dataTable" class="layui-table">
+				<thead>
+				<tr class="text-c">
+					<th width="80">日期</th>
+					<th width="80">币种</th>
+					<th width="80">数量</th>
+				</tr>
+				</thead>
+				<tbody id="data">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+	layui.use(['form', 'liuQi','laydate','echarts'], function () {
+		var form = layui.form,
+				liuQi = layui.liuQi,
+				laydate = layui.laydate,
+				echarts = layui.echarts;
+		laydate.render({
+			elem: '#startDate',
+			type: 'datetime'  //year,month,date,time,datetime
+		});
+		//日期
+		laydate.render({
+			elem: '#endDate',
+			type: 'datetime'
+		});
+		form.render();
+
+		var optionRecords={
+			title: {
+				text: '提现统计',
+				x: 50 //center
+			},
+			tooltip: {
+				trigger: 'axis'
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			xAxis: {
+				type: 'category',
+				boundaryGap: false,
+				data: []
+			},
+			yAxis: {
+				type: 'value'
+			},
+			series: []
+		};
+		/**
+		 * 报表功能
+		 */
+		var echartsRecords = echarts.init(document.getElementById('container'), 'walden');
+		//设置一个空的初始化
+		echartsRecords.setOption(optionRecords);
+		search();
+
+		form.on('submit(data-search-btn)', function (data) {
+			search();
+
+			//执行搜索重载
+			return false;
+		});
+
+		function search(){
+			var startDate=$("#startDate").val();
+			var endDate=$("#endDate").val();
+			liuQi.ajax("/admin/stat/extractStat",{"startDate":startDate,"endDate":endDate},function (obj) {
+				if(obj.code==0){
+					var html="";
+					var d=obj.obj;
+					var list=d.list;
+					for(var i=0;i<list.length;i++){
+						html+="<tr><td>"+list[i].date+"</td><td>"+list[i].currencyName+"</td><td>"+list[i].total+"</td></tr>";
+					}
+					var x=d.date;
+					var y=d.data;
+					var yData=[];
+					var legend=[];
+					for(var key in y) {
+						legend.push(key);
+						var obj={};
+						obj['type']='line';
+						obj['name']=key;
+						obj['data']=y[key];
+						yData.push(obj)
+					}
+					$("#data").html(html);
+					echartsRecords.setOption({
+						legend: { //顶部显示 与series中的数据类型的name一致
+							data: legend
+						},
+						xAxis: {
+							data: x
+						},
+						series: yData
+					});
+				}
+			});
+		}
+	});
+</script>
+</body>
+</html>

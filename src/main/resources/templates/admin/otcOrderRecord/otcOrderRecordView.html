@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=添加OTC日志记录">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label">申诉方:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${m.appealTypeStr}" disabled="disabled" class="layui-input">
+                </div>
+                <label class="layui-form-label">申诉用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${m.appealUserName}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">买用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${m.buyUserName}" disabled="disabled" class="layui-input">
+                </div>
+                <label class="layui-form-label">卖用户:</label>
+                <div class="layui-input-inline">
+                    <input th:value="${m.sellUserName}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">理由:</label>
+                <div class="layui-input-block">
+                    <input th:value="${m.appealContent}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <table class="layui-table">
+                <thead>
+                    <tr class="text-c">
+                        <th width="80">创建时间</th>
+                        <th width="50">操作用户</th>
+                        <th width="100">内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item:${list}">
+                        <td th:text="${#dates.format(item.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${item.name}"></td>
+                        <td th:text="${item.remark}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+</body>
+</html>

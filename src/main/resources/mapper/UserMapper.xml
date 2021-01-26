@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.UserMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.name,t.pwd,t.trade_pwd,t.phone,t.email,t.status,t.pwd_strength,t.last_login_time,t.zone,
+			t.whiteIf,t.phone_auth,t.email_auth,t.auth_type,t.robot,t.invite_code,t.otc,t.otc_name,
+			t.active_date,t.mnemonic,t.address,t.is_remember,t.google_auth,t.google_secret,t.pay_type
+			,t.trade_free,t.rank
+		</trim>
+	</sql>
+
+	<!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="userModel" id="user">
+		<result property="id" column="id"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="createTime" column="create_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="name" column="name"/>
+		<result property="pwd" column="pwd"/>
+		<result property="tradePwd" column="trade_pwd"/>
+		<result property="phone" column="phone"/>
+		<result property="email" column="email"/>
+		<result property="status" column="status"/>
+		<result property="pwdStrength" column="pwd_strength"/>
+		<result property="lastLoginTime" column="last_login_time"/>
+		<result property="zone" column="zone"/>
+		<result property="whiteIf" column="whiteIf"/>
+		<result property="phoneAuth" column="phone_auth"/>
+		<result property="emailAuth" column="email_auth"/>
+		<result property="authType" column="auth_type"/>
+		<result property="robot" column="robot"/>
+		<result property="inviteCode" column="invite_code"/>
+		<result property="otc" column="otc"/>
+		<result property="otcName" column="otc_name"/>
+		<result property="activeDate" column="active_date"/>
+		<result property="mnemonic" column="mnemonic"/>
+		<result property="address" column="address"/>
+		<result property="isRemember" column="is_remember"/>
+		<result property="googleAuth" column="google_auth"/>
+		<result property="googleSecret" column="google_secret"/>
+		<result property="payType" column="pay_type"/>
+		<result property="tradeFree" column="trade_free"/>
+		<result property="rank" column="rank"/>
+	</resultMap>
+
+	<!-- 对应dto的字段  继承了实体-->
+	<resultMap type="userModelDto" extends="user"  id="userDto" >
+	</resultMap>
+
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="userModel">
+		insert into t_user(
+		<trim  suffixOverrides=",">
+			update_time,create_time,remark,version,
+			`name`,pwd,trade_pwd,phone,email,status,pwd_strength,last_login_time,`zone`,
+			`whiteIf`,`phone_auth`,`email_auth`,`auth_type`,`robot`,`invite_code`,`otc`,`otc_name`,`active_date`,`mnemonic`,
+			`address`,`is_remember`,`google_auth`,`google_secret`,`pay_type`,`trade_free`,`rank`
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{name},#{pwd},#{tradePwd},#{phone},#{email},#{status},#{pwdStrength},#{lastLoginTime},#{zone},
+	 		#{whiteIf},#{phoneAuth},#{emailAuth},#{authType},#{robot},#{inviteCode},#{otc},#{otcName},
+             #{activeDate},#{mnemonic},#{address},#{isRemember},#{googleAuth},#{googleSecret},#{payType},#{tradeFree}
+             ,#{rank}
+ 		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="userModel">
+		update  t_user
+		<set>
+		    <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+		    <if test="remark != null">
+                remark = #{remark},
+            </if>
+		    <if test="version != null">
+                version = #{version},
+            </if>
+			<if test="name != null">
+                    `name` = #{name},
+            </if>
+            <if test="pwd != null">
+                    pwd = #{pwd},
+            </if>
+            <if test="tradePwd != null">
+                    trade_pwd = #{tradePwd},
+            </if>
+            <if test="phone != null">
+                    phone = #{phone},
+            </if>
+            <if test="email != null">
+                    email = #{email},
+            </if>
+            <if test="status != null">
+                    status = #{status},
+            </if>
+            <if test="pwdStrength != null">
+                    pwd_strength = #{pwdStrength},
+            </if>
+            <if test="lastLoginTime != null">
+                    last_login_time = #{lastLoginTime},
+            </if>
+			<if test="zone != null">
+				`zone` = #{zone},
+            </if>
+			<if test="whiteIf != null">
+				`whiteIf` = #{whiteIf},
+			</if>
+			<if test="phoneAuth != null">
+				`phone_auth` = #{phoneAuth},
+			</if>
+			<if test="emailAuth != null">
+				`email_auth` = #{emailAuth},
+			</if>
+			<if test="authType != null">
+				`auth_type` = #{authType},
+			</if>
+			<if test="robot != null">
+				`robot` = #{robot},
+			</if>
+			<if test="inviteCode != null">
+				`invite_code` = #{inviteCode},
+			</if>
+			<if test="otc != null">
+				`otc` = #{otc},
+			</if>
+			<if test="otcName != null">
+				`otc_name` = #{otcName},
+			</if>
+			<if test="activeDate != null">
+				`active_date` = #{activeDate},
+			</if>
+			<if test="mnemonic != null">
+				`mnemonic` = #{mnemonic},
+			</if>
+			<if test="address != null">
+				`address` = #{address},
+			</if>
+			<if test="isRemember != null">
+				`is_remember` = #{isRemember},
+			</if>
+			<if test="googleAuth != null">
+				`google_auth` = #{googleAuth},
+			</if>
+			<if test="googleSecret != null">
+				`google_secret` = #{googleSecret},
+			</if>
+			<if test="payType != null">
+				`pay_type` = #{payType},
+			</if>
+			<if test="tradeFree != null">
+				`trade_free` = #{tradeFree},
+			</if>
+			<if test="rank != null">
+				`rank` = #{rank},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<!-- 查询 -->
+	<select id="getById" resultMap="userDto">
+		select <include refid="allColumn"></include>
+		from  t_user t
+		where t.id = #{id}
+		
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="userDto">
+		select <include refid="allColumn"></include>
+		from  t_user t
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="userModelDto" resultMap="userDto">
+		select <include refid="allColumn"></include>
+		from  t_user t
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null ">
+				AND t.id = #{id}
+			</if>
+
+
+			<if test="ids != null ">
+				and  t.id in
+				<foreach collection="ids" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="name != null and  name != '' ">
+				AND t.name = #{name}
+			</if>
+
+			<if test="pwd != null and  pwd != '' ">
+				AND t.pwd = #{pwd}
+			</if>
+
+			<if test="tradePwd != null and  tradePwd != '' ">
+				AND t.trade_pwd = #{tradePwd}
+			</if>
+
+			<if test="phone != null and  phone != '' ">
+				AND t.phone = #{phone}
+			</if>
+
+			<if test="email != null and  email != '' ">
+				AND t.email = #{email}
+			</if>
+
+			<if test="status != null  and status &gt; -2">
+				AND t.status = #{status}
+			</if>
+
+			<if test="pwdStrength != null  and pwdStrength &gt; -2">
+				AND t.pwd_strength = #{pwdStrength}
+			</if>
+
+			<if test="whiteIf != null  and whiteIf &gt; -2">
+				AND t.whiteIf = #{whiteIf}
+			</if>
+			<if test="otc != null  and otc &gt; -2">
+				AND t.otc = #{otc}
+			</if>
+
+			<if test="lastLoginTime != null  ">
+				AND t.last_login_time = #{lastLoginTime}
+			</if>
+			<if test="zone != null and  zone != '' ">
+				AND t.zone = #{zone}
+			</if>
+			<if test="otcName != null and  otcName != '' ">
+				AND t.otc_name = #{otcName}
+			</if>
+			<if test="inviteCode != null and  inviteCode != '' ">
+				AND t.invite_code = #{inviteCode}
+			</if>
+			<if test="phoneAuth != null and phoneAuth &gt; -2">
+				AND t.phone_auth = #{phoneAuth}
+			</if>
+			<if test="emailAuth != null and emailAuth &gt; -2">
+				AND t.email_auth = #{emailAuth}
+			</if>
+			<if test="authType != null and authType &gt; -2">
+				AND t.auth_type = #{authType}
+			</if>
+			<if test="robot != null and robot &gt; -2">
+				AND t.robot = #{robot}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+	<select id="queryUnique"  parameterType="userModelDto" resultMap="userDto">
+		select <include refid="allColumn"></include>
+		from  t_user t
+		<trim prefix="where" prefixOverrides="AND|OR">
+			<if test="phone != null and phone!='' ">
+				AND t.phone = #{phone}
+			</if>
+			<if test="email != null  and email!='' ">
+				AND t.email = #{email}
+			</if>
+			<if test="name != null and name!='' ">
+				AND t.name = #{name}
+			</if>
+			<if test="inviteCode != null and inviteCode!='' ">
+				AND t.invite_code = #{inviteCode}
+			</if>
+		</trim>
+	</select>
+
+
+	<select id="getTotal" resultType="java.lang.Integer">
+		select count(*) from t_user
+	</select>
+
+	<select id="queryIdByLikeName" resultType="long">
+		select id
+		from  t_user t
+		where t.name like concat(#{name},'%')
+	</select>
+</mapper>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=用户编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>登录名:</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="required|name" autocomplete="off"
+                           class="layui-input" th:value="${ m.name}">
+                </div>
+                <label class="layui-form-label">otc商户名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="otcName" name="otcName" autocomplete="off"
+                           class="layui-input" th:value="${ m.otcName}">
+                    <input type="hidden" id="sendType" name="sendType" lay-verify="required|name" autocomplete="off"
+                           class="layui-input"  value="5" >
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">区号:</label>
+                <div class="layui-input-inline">
+                    <select name="zone" lay-search="">
+                        <option value=""></option>
+                        <option th:each="t,tState:${ zone}" th:value="${t.zone}" th:text="${'('+t.zone+')'+t.name}"
+                                th:selected="${m.zone==t.zone}"></option>
+                    </select>
+                </div>
+                <label class="layui-form-label">手机号:</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="phone" name="phone" autocomplete="off" class="layui-input"
+                           th:value="${ m.phone}">
+                </div>
+                <label class="layui-form-label">邮箱:</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="email" name="email" autocomplete="off" class="layui-input"
+                           th:value="${ m.email}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>验证类型:</label>
+                <div class="layui-input-inline">
+                    <input type="radio" th:each="t,tState:${ typeList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="authType" th:title="${t.name}" th:checked="${ t.key == m.authType}">
+                </div>
+                <label class="layui-form-label">手机是否验证:</label>
+                <div class="layui-input-inline">
+                    <input type="radio" th:each="t,tState:${ yesNoList}" th:value="${t.key}"
+                           lay-verify="required|phoneAuth" name="phoneAuth" th:title="${t.name}"
+                           th:checked="${ t.key == m.phoneAuth}">
+                </div>
+                <label class="layui-form-label">邮件是否验证:</label>
+                <div class="layui-input-inline">
+                    <input type="radio" th:each="t,tState:${ yesNoList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="emailAuth" th:title="${t.name}" th:checked="${ t.key == m.emailAuth}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>是否otc发布:</label>
+                <div class="layui-input-block">
+                    <input type="radio" th:each="t,tState:${ yesNoList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="otc" th:title="${t.name}" th:checked="${ t.key == m.otc}">
+                </div>
+                <label class="layui-form-label"><span style="color: red">*</span>是否机器人:</label>
+                <div class="layui-input-inline">
+                    <input type="radio" th:each="t,tState:${ yesNoList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="robot" th:title="${t.name}" th:checked="${ t.key == m.robot}">
+                </div>
+                <label class="layui-form-label"><span style="color: red">*</span>白名单:</label>
+                <div class="layui-input-inline">
+                    <input type="radio" th:each="t,tState:${ yesNoList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="whiteIf" th:title="${t.name}" th:checked="${ t.key == m.whiteIf}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>状态:</label>
+                <div class="layui-input-block">
+                    <input type="radio" th:each="t,tState:${ statusList}" th:value="${t.key}" lay-verify="otherReq"
+                           name="status" th:title="${t.name}" th:checked="${ t.key == m.status}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery', 'liuQi'], function () {
+        var form = layui.form,
+            liuQi = layui.liuQi,
+            laydate = layui.laydate;
+
+        //日期
+        form.render();
+
+        //自定义验证规则
+        form.verify({
+            //radio验证
+            otherReq: function (value, item) {
+                var $ = layui.$;
+                var verifyName = $(item).attr('name')
+                    , verifyType = $(item).attr('type')
+                    , formElem = $(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                    , verifyElem = formElem.find('input[name=' + verifyName + ']')//获取需要校验的元素
+                    , isTrue = verifyElem.is(':checked')//是否命中校验
+                    , focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+                if (!isTrue || !value) {
+                    //定位焦点
+                    focusElem.css(verifyType == 'radio' ? {"color": "#FF5722"} : {"border-color": "#FF5722"});
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex", "1").css("outline", "0").blur(function () {
+                        focusElem.css(verifyType == 'radio' ? {"color": ""} : {"border-color": ""});
+                    }).focus();
+                    return '必填项不能为空';
+                }
+            },
+        });
+        //监听提交
+        form.on('submit(formSubmit)', function (data) {
+            data = data.field;
+            liuQi.ajax("/admin/user/update", data,
+                function (data) {
+                    //关闭
+                    parent.layer.msg(data.msg);
+                    parent.layui.table.reload('currentTableId');
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                }
+            );
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

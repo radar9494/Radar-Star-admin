@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=钱包编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <div style="color: red"> 注：直接编辑修改数量即可。扣减输入负数。（冻结不能输入负数）</div>
+        </fieldset>
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>用户:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" th:text="${ userName}"></label>
+                    </div>
+                    <label class="layui-form-label"><span style="color: red">*</span>币种:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" th:text="${ currencyName}"></label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">可用数量:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" id="using_old" th:text="${ #numbers.formatDecimal(m.using,1,8)}"></label>
+                    </div>
+                    <label class="layui-form-label">冻结数量:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" id="freeze_old" th:text="${ #numbers.formatDecimal(m.freeze,1,8)}"></label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">修改可用数量:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="using" name="using" lay-verify="using" autocomplete="off"  class="layui-input" value="0" onchange="changeQ('using')">
+                    </div>
+                    <label class="layui-form-label">修改冻结数量:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="freeze" name="freeze" lay-verify="freeze" autocomplete="off"  class="layui-input" value="0" onchange="changeQ('freeze')">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">修改后可用数量:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" id="using_new"></label>
+                    </div>
+                    <label class="layui-form-label">修改冻结后数量:</label>
+                    <div class="layui-input-inline">
+                        <label class="layui-form-label" id="freeze_new" ></label>
+                    </div>
+                </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+
+            //日期
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                using: function (value) {
+                },
+                freeze: function (value) {
+                },
+            });
+        //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/otcWallet/updateP",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+
+
+        });
+
+    function changeQ(type){
+        var old=$("#"+type+"_old").text();
+        var modify=$("#"+type).val();
+        var base=Math.pow(10,8);
+        var  cur=((old*base+modify*base)/base).toFixed(8);
+        $("#"+type+"_new").text(cur);
+    }
+</script>
+
+</body>
+</html>

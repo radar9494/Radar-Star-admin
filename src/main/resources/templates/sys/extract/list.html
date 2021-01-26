@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="sys/head :: head" th:with="title=提币列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="用户">用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" autocomplete="off" class="layui-input" title="用户">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="币种">币种</label>
+                            <div class="layui-input-inline">
+                                <select name="currencyId" lay-search="">
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ list}" th:value="${t.id}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="地址">地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="address" autocomplete="off" class="layui-input" title="地址">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="状态 0未处理 1已处理">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="status" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ statusList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="提现hash">提现hash</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="hash" autocomplete="off" class="layui-input" title="提现hash">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/sys/extract/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'userName', title: '用户',align: "center"},
+                    {field: 'realName', title: '姓名',align: "center"},
+                    {field: 'currencyName', title: '币种',align: "center"},
+                    {field: 'quantity', title: '申请数量',align: "center"},
+                    {field: 'address', width: 350,title: '地址',align: "center"},
+                    {field: 'realQuantity', title: '到账数量',align: "center"},
+                    {field: 'rate', title: '手续费',align: "center"},
+                    {field: 'statusStr', title: '状态',align: "center",
+                        templet: function (d) {
+                            var type="";
+                            if(d.status==0){
+                                type="layui-btn-primary";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.statusStr+"</a>";
+                        }
+                    },
+                    {field: 'dealDate', title: '处理时间',align: "center"},
+                    {field: 'hash', width: 450,title: '提现hash',align: "center"},
+                    {field: 'memo', title: '标签',align: "center"},
+                    {field: 'reason', title: '理由',align: "center"},
+                    {field: 'freezeQuantity', title: '冻结数量',align: "center"},
+                    {field: 'typeStr', title: '类型',align: "center",
+                        templet: function (d) {
+                            var type="";
+                            if(d.type==0){
+                                type="layui-btn-primary";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.typeStr+"</a>";
+                        }
+                    },
+                    {field: 'receiveUserName', title: '接收人',align: "center"},
+                    {field: 'dealAdminId', title: '处理用户',align: "center"},
+                    {field: 'protocolStr', title: '协议',align: "center"},
+                    {field: 'ptCurrencyName', title: '扣除平台币',align: "center"},
+                    {field: 'ptQuantity', title: '扣除数量',align: "center"},
+                    {field: 'walletTypeStr', title: '钱包类型',align: "center"},
+                    {field: 'createTime', title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/sys/extract/exportExc',params);
+                return false;
+            });
+
+        });
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+﻿<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=ctc统计">
+</head>
+<body>
+<body>
+<div class="layuimini-container">
+	<div class="layuimini-main">
+		<fieldset class="layui-elem-field layuimini-search">
+			<legend>搜索信息</legend>
+			<div style="margin: 10px 10px 10px 10px">
+				<form class="layui-form layui-form-pane">
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<label class="layui-form-label">日期</label>
+							<div class="layui-input-inline">
+								<input type="text" name="startDate" id="startDate"  placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-input-inline">
+								<input type="text" name="endDate" id="endDate"  placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-inline">
+							<a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+							<button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</fieldset>
+		<table id="dataTable" class="layui-table">
+			<thead>
+			<tr class="text-c">
+				<th width="80">承运商</th>
+				<th width="80">姓名</th>
+				<th width="80">币种</th>
+				<th width="80">类型</th>
+				<th width="80">待交易金额</th>
+				<th width="80">交易中金额</th>
+				<th width="80">完成金额</th>
+				<th width="80">取消金额</th>
+			</tr>
+			</thead>
+			<tbody id="data">
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+    $(function () {
+        search();
+    });
+
+    function search(){
+        var startDate=$("#startDate").val();
+        var endDate=$("#endDate").val();
+        $.ajax({
+            url:"/admin/stat/ctcStat",
+            data:{"startDate":startDate,"endDate":endDate},
+            dataType:"json",
+            success:function(data){
+                if(data.code==0){
+                    var html="";
+                    var d=data.obj;
+                    for(var i=0;i<d.length;i++){
+                        html+="<tr><td>"+d[i].storeName+"</td><td>"+d[i].realName+"</td><td>"+d[i].currencyName+"</td><td>"+d[i].tradeTypeStr+"</td><td>"+d[i].waitMoney+"</td><td>"+d[i].runingMoney+"</td><td>"+d[i].endMoney+"</td><td>"+d[i].cancelMoney+"</td></tr>";
+                    }
+                    $("#data").html(html);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

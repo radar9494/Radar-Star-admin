@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=用户认证列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">真实实名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="realName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">身份证号码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="idcart" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="authStatus" >
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ authStatusList}" th:value="${t.key}" th:text="${t.name}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime" lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm"  lay-submit lay-filter="data-export-btn">导出</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <div class="layui-btn-group">
+            <button class="layui-btn layui-btn-sm data-add-btn">批量认证</button>
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs  layui-btn-warm data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs" lay-event="auth">认证</a>
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+        //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+        layui.use(['form','table','laydate','liuQi'], function () {
+            var $ = layui.jquery,
+                    form = layui.form,
+                    table = layui.table,
+                    laydate = layui.laydate,
+                    liuQi = layui.liuQi;
+            var table_height=liuQi.getTableHeight($("fieldset").height());
+            //日期
+            laydate.render({
+                elem: '#startCreateTime',
+                type: 'datetime'  //year,month,date,time,datetime
+            });
+            //日期
+            laydate.render({
+                elem: '#endCreateTime',
+                type: 'datetime'
+            });
+            form.render();
+
+            table.render({
+                elem: '#currentTableId',
+                url: '/admin/userAuth/queryList',
+                cols: [[
+                    {type: "checkbox", width: 30, align: "center",fixed: "left"},
+                    {field: 'id',width: 80,align: "center", title: 'ID'},
+                    {field: 'userName', title: '用户',align: "center"},
+                    {field: 'realName', title: '真实实名',align: "center"},
+                    {field: 'idcart', title: '身份证号码',align: "center"},
+                    {field: 'authStatusStr', title: '状态',align: "center",
+                        templet: function (d) {
+                            //原始按钮:layui-btn-primary    默认按钮:layui-btn    百搭按钮:layui-btn-normal
+                            //暖色按钮:layui-btn-warm       警告按钮:layui-btn-danger   禁用按钮:layui-btn-disabled
+                            var type="";
+                            if(d.authStatus==0 ){
+                                type="layui-btn-primary";
+                            }else if(d.authStatus==2 ){
+                                type="layui-btn-warm";
+                            }else if(d.authStatus==3 ){
+                                type="layui-btn-danger";
+                            }
+                            return "<a class='layui-btn layui-btn-xs "+type+"'>"+d.authStatusStr+"</a>";
+                        }
+                    },
+                    {field: 'image1', title: '身份证正面',align: "center",
+                        templet: function (d) {
+                            var html="";
+                            if(d.image1!=''){
+                                html= "<img width='80'  src='" + d.image1 + "'>"
+                            }
+                           return html;
+                        }
+                    },
+                    {field: 'image2', title: '身份证反面',align: "center",
+                        templet: function (d) {
+                            var html="";
+                            if(d.image2!=''){
+                                html= "<img width='80'  src='" + d.image2 + "'>"
+                            }
+                            return html;
+                        }
+                    },
+                    {field: 'image3', title: '身份证手持',align: "center",
+                        templet: function (d) {
+                            var html="";
+                            if(d.image3!=''){
+                                html= "<img width='80'  src='" + d.image3 + "'>"
+                            }
+                            return html;
+                        }
+                    },
+                    {field: 'createTime', title: '创建时间',align: "center"},
+                    /*{field: 'roleId', title: '财富',align: "center",
+                        templet: function (d) {
+                            return d.id + "-" + d.name
+                        }
+                    },*/
+                    {title: '操作', width: '10%', templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]],
+                height:table_height,
+                limits: [10, 20, 50, 100],
+                limit: 20,
+                cellMinWidth:100,
+                loading:true,
+                page: true
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var result = data.field;
+
+                //执行搜索重载
+                table.reload('currentTableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: result
+                }, 'data');
+                return false;
+            });
+
+            // 监听搜索操作
+            form.on('submit(data-export-btn)', function (data) {
+                var params = data.field;
+                liuQi.export('/admin/userAuth/exportExc',params);
+                return false;
+            });
+
+            $(".data-add-btn").on("click", function () {
+                //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+                // liuQi.openDialog('/admin/userRecharge/toAdd',{},"添加用户充值",'','60');
+                var checkStatus = table.checkStatus('currentTableId');
+                console.log(checkStatus.data);
+                var ids=new Array();
+                checkStatus.data.forEach((item,index,array)=>{
+                    ids.push(item.id);
+                })
+                console.log(ids);
+                ids=ids.join(",");
+                layer.confirm("确认通过？",{btn: ['确定', '取消']},function() {
+                    liuQi.ajaxRefreshTable('/admin/userAuth/auths', {"ids": ids}, "currentTableId");
+                })
+            });
+
+
+            // 监听添加操作
+            // $(".data-add-btn").on("click", function () {
+            //     //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+            //     liuQi.openDialog('/admin/userAuth/toAdd',{},"添加",'50','60');
+            // });
+
+            table.on('tool(currentTableFilter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'edit') {
+                    //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+                    liuQi.openDialog('/admin/userAuth/toUpdate',{"id":data.id},"编辑",'50','');
+                } else if (obj.event === 'auth') {
+                    liuQi.openDialog('/admin/userAuth/toAuth',{"id":data.id},"认证",'','');
+                }
+            });
+        });
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.PermissionMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.menu_id,t.permission_name,t.method_name,			
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="permissionModel" id="permission">
+	    <result property="id" column="id"/>
+	    <result property="updateTime" column="update_time"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="remark" column="remark"/>
+	    <result property="version" column="version"/>
+		<result property="menuId" column="menu_id"/>
+		<result property="permissionName" column="permission_name"/>
+		<result property="methodName" column="method_name"/>
+	</resultMap>
+    <!-- dto映射  添加的字段放在这块-->
+    <resultMap type="permissionModelDto" extends="permission" id="permissionDto">
+		<result property="menuName" column="menuName"></result>
+    </resultMap>
+	
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="permissionModel">
+		insert into t_permission(
+		<trim  suffixOverrides=",">
+			`update_time`,`create_time`,`remark`,`version`,
+			`menu_id`,`permission_name`,`method_name`,
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{menuId},#{permissionName},#{methodName},			
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="permissionModel">
+		update  t_permission
+		<set>
+		    <if test="updateTime != null">
+                `update_time` = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+		    <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+		    <if test="version != null">
+                `version` = #{version},
+            </if>
+	            <if test="menuId != null">
+                    `menu_id` = #{menuId},
+            </if>
+            <if test="permissionName != null">
+                    `permission_name` = #{permissionName},
+            </if>
+            <if test="methodName != null">
+                    `method_name` = #{methodName},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="permissionDto">
+		select <include refid="allColumn"></include> 
+		from  t_permission t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="permissionDto">
+		select <include refid="allColumn"></include> 
+		from  t_permission t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="permissionModelDto" resultMap="permissionDto">
+		select <include refid="allColumn"></include> ,m.name as menuName
+		from  t_permission t
+		join t_menu m  on t.menu_id=m.id
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null  ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null   ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null   ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null  ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="menuId != null and menuId &gt; -2">
+				AND t.menu_id = #{menuId}
+			</if>
+
+			<if test="permissionName != null and  permissionName != '' ">
+				AND t.permission_name = #{permissionName}
+			</if>
+
+			<if test="methodName != null and  methodName != '' ">
+				AND t.method_name = #{methodName}
+			</if>
+			<if test="menuName != null and  menuName != '' ">
+				AND m.name = #{menuName}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+
+</mapper>

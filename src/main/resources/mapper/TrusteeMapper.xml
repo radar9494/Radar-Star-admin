@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.TrusteeMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.user_id,t.trade_id,t.trade_type,t.quantity,t.price,t.trade_quantity,t.status,t.priority,t.rate,t.white,t.robot,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="trusteeModel" id="trustee">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="userId" column="user_id"/>
+		<result property="tradeId" column="trade_id"/>
+		<result property="tradeType" column="trade_type"/>
+		<result property="quantity" column="quantity"/>
+		<result property="price" column="price"/>
+		<result property="tradeQuantity" column="trade_quantity"/>
+		<result property="status" column="status"/>
+		<result property="priority" column="priority"/>
+		<result property="rate" column="rate"/>
+		<result property="white" column="white"/>
+		<result property="robot" column="robot"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="trusteeModelDto" extends="trustee" id="trusteeDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="trusteeModel">
+		insert into t_trustee(
+		<trim  suffixOverrides=",">
+				id,
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="userId != null">`user_id`,</if>
+				<if test="tradeId != null">`trade_id`,</if>
+				<if test="tradeType != null">`trade_type`,</if>
+				<if test="quantity != null">`quantity`,</if>
+				<if test="price != null">`price`,</if>
+				<if test="tradeQuantity != null">`trade_quantity`,</if>
+				<if test="status != null">`status`,</if>
+				<if test="priority != null">`priority`,</if>
+				<if test="rate != null">`rate`,</if>
+				<if test="white != null">`white`,</if>
+				<if test="robot != null">`robot`,</if>
+		
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				#{id},
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="userId != null">#{userId},</if>
+				<if test="tradeId != null">#{tradeId},</if>
+				<if test="tradeType != null">#{tradeType},</if>
+				<if test="quantity != null">#{quantity},</if>
+				<if test="price != null">#{price},</if>
+				<if test="tradeQuantity != null">#{tradeQuantity},</if>
+				<if test="status != null">#{status},</if>
+				<if test="priority != null">#{priority},</if>
+				<if test="rate != null">#{rate},</if>
+				<if test="white != null">#{white},</if>
+				<if test="robot != null">#{robot},</if>
+		
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="trusteeModel">
+		update  t_trustee
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+
+            <if test="userId != null">
+                    `user_id` = #{userId},
+            </if>
+            <if test="tradeId != null">
+                    `trade_id` = #{tradeId},
+            </if>
+            <if test="tradeType != null">
+                    `trade_type` = #{tradeType},
+            </if>
+            <if test="quantity != null">
+                    `quantity` = #{quantity},
+            </if>
+            <if test="price != null">
+                    `price` = #{price},
+            </if>
+            <if test="tradeQuantity != null">
+                    `trade_quantity` = #{tradeQuantity},
+            </if>
+            <if test="status != null">
+                    `status` = #{status},
+            </if>
+            <if test="priority != null">
+                    `priority` = #{priority},
+            </if>
+            <if test="rate != null">
+                    `rate` = #{rate},
+            </if>
+            <if test="white != null">
+                    `white` = #{white},
+            </if>
+            <if test="robot != null">
+                    `robot` = #{robot},
+            </if>
+			`version` = #{version}+1
+		</set>
+		where id = #{id} and `version` = #{version}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="trusteeDto">
+		select <include refid="allColumn"></include> 
+		from  t_trustee t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="trusteeDto">
+		select <include refid="allColumn"></include> 
+		from  t_trustee t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="trusteeModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="trusteeModelDto" resultMap="trusteeDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+		<if test="limitCount and  count &gt; 0">
+			limit ${count}
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_trustee t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="userId != null and userId &gt; -2">
+				AND t.user_id = #{userId}
+            </if>
+	
+			<if test="tradeId != null and  tradeId &gt; -2">
+				AND t.trade_id = #{tradeId}
+            </if>
+	
+			<if test="tradeType != null and  tradeType &gt; -2">
+				AND t.trade_type = #{tradeType}
+            </if>
+	
+			<if test="quantity != null and  quantity &gt; -2">
+				AND t.quantity = #{quantity}
+            </if>
+	
+			<if test="price != null and  price &gt; -2">
+				AND t.price = #{price}
+            </if>
+	
+			<if test="tradeQuantity != null and  tradeQuantity &gt; -2">
+				AND t.trade_quantity = #{tradeQuantity}
+            </if>
+	
+			<if test="status != null and status &gt; -2">
+				AND t.status = #{status}
+            </if>
+	
+			<if test="priority != null and  priority &gt; -2">
+				AND t.priority = #{priority}
+            </if>
+	
+			<if test="rate != null and  rate &gt; -2">
+				AND t.rate = #{rate}
+            </if>
+	
+			<if test="white != null and  white &gt; -2">
+				AND t.white = #{white}
+            </if>
+	
+			<if test="robot != null and  robot &gt; -2">
+				AND t.robot = #{robot}
+            </if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+			<if test="statusList!=null ">
+				AND t.status in
+				<foreach collection="statusList" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="searchTradeList!=null and searchTradeList">
+				AND t.trade_id in
+				<foreach collection="tradeList" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+        </trim>
+	</sql>
+
+	<select id="findTrusteeSellMinPrice" resultType="java.math.BigDecimal">
+		select min(t.price)
+		from  t_trustee t
+		where t.status =0
+		AND t.trade_type = 1
+		AND t.trade_id = #{tradeId}
+	</select>
+	<select id="findTrusteeBuyMaxPrice" resultType="java.math.BigDecimal">
+		select max(t.price)
+		from  t_trustee t
+		where t.status =0
+		AND t.trade_type = 0
+		AND t.trade_id = #{tradeId}
+	</select>
+	<select id="queryRobotPrice" resultType="long">
+		select t.id from t_trustee t
+		where t.status =0
+		and t.trade_id = #{tradeId}
+		and t.trade_type=#{tradeType}
+		and t.robot=1
+		<if test="tradeType==1">
+			<![CDATA[
+        and t.price<#{curPrice}
+        ]]>
+		</if>
+		<if test="tradeType==0">
+			and t.price>#{curPrice}
+		</if>
+	</select>
+
+	<select id="queryRobot" resultType="long">
+		select t.id from t_trustee t
+		where t.status =0
+		and t.trade_id = #{tradeId}
+		and t.robot=1
+		<if test="tradeType!=null and tradeType &gt; -2">
+			and t.trade_type=#{tradeType}
+		</if>
+	</select>
+	<select id="findFirstSell" resultMap="trusteeDto">
+		select <include refid="allColumn"></include>
+		from t_trustee t
+		where t.status =0
+		AND t.trade_type = 1
+		AND t.trade_id = #{tradeId}
+		order by t.price asc,t.priority desc,t.create_time asc
+		limit 1
+	</select>
+	<select id="findFirstBuy" resultMap="trusteeDto">
+		select <include refid="allColumn"></include>
+		from t_trustee t
+		where t.status =0
+		AND t.trade_type = 0
+		AND t.trade_id = #{tradeId}
+		order by t.price desc,t.priority desc,t.create_time asc
+		limit 1
+	</select>
+	<select id="findTrusteeOrderList" resultMap="trusteeDto">
+		select t.price,
+		sum(t.quantity - t.trade_quantity) as nums
+		from t_trustee t
+		where t.trade_type=#{tradeType}
+		and t.status =0
+		and t.trade_id = #{tradeId}
+		group by t.price,trade_type
+		<if test="tradeType==0">
+			order by t.price desc
+		</if>
+		<if test="tradeType==1">
+			order by t.price asc
+		</if>
+		limit ${num}
+	</select>
+
+</mapper>

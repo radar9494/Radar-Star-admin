@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.liuqi.business.mapper.RolePermissionRelMapper">
+
+	<insert id="insert" parameterType="com.liuqi.business.model.RolePermissionRel"
+	        useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO t_role_permission (role_id,permission_id)VALUES(#{roleId},#{permissionId})
+	</insert>
+
+	<delete id="deleteByRoleId">
+		DELETE  from t_role_permission
+		where role_id=#{roleId}
+	</delete>
+
+	<select id="getPermissionNameByRole" resultType="string">
+		select p.permission_name from t_role_permission t
+		join t_permission p on t.permission_id=p.id
+		where role_id=#{roleId}
+	</select>
+
+	<select id="getPermissionIdByRole" resultType="long">
+		select p.id from t_role_permission t
+		join t_permission p on t.permission_id=p.id
+		where role_id=#{roleId}
+	</select>
+</mapper>

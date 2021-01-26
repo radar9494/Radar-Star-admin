@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=管理员编辑">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>名称:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="required|name" autocomplete="off"  class="layui-input" th:value="${ m.name}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>状态:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" th:each="t,tState:${ statusList}" th:value="${t.key}" lay-verify="required" name="status" th:title="${t.name}" th:checked="${t.key==m.status}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>角色:</label>
+                    <div class="layui-input-block">
+                        <select name="roleId" lay-verify="required">
+                            <option value="">所有</option>
+                            <option th:each="t,tState:${ list}" th:value="${t.id}" th:text="${t.name}" th:selected="${m.roleId== t.id}"></option>
+                        </select>
+                    </div>
+                </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" th:value="${ m.id}">
+                    <button class="layui-btn" lay-submit="" lay-filter="formSubmit">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    layui.use(['layedit', 'layer', 'jquery','liuQi'], function () {
+            var form = layui.form,
+                liuQi = layui.liuQi,
+                laydate = layui.laydate;
+
+            //日期
+            form.render();
+
+            //自定义验证规则
+            form.verify({
+                name: function (value) {
+                },
+                pwd: function (value) {
+                },
+                status: function (value) {
+                },
+                roleId: function (value) {
+                },
+            });
+        //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                data=data.field;
+                liuQi.ajax("/admin/userAdmin/update",data,
+                        function (data) {
+                            //关闭
+                            parent.layer.msg(data.msg);
+                            parent.layui.table.reload('currentTableId');
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                );
+                return false;
+            });
+        });
+</script>
+
+</body>
+</html>

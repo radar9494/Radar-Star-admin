@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=查询权限">
+</head>
+<body>
+<article class="page-container">
+    <form  class="form form-horizontal" id="mainForm">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>菜单id：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder=""  name="menuId" th:value="${ m.menuId}" disabled="disabled">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder=""  name="permissionName" th:value="${ m.permissionName}" disabled="disabled">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>按钮方法名称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder=""  name="methodName" th:value="${ m.methodName}" disabled="disabled">
+            </div>
+        </div>
+    </form>
+</article>
+<script type="text/javascript" th:inline="javascript">
+</script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=充值记录列表">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">ID</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="id" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="用户">用户</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" autocomplete="off" class="layui-input" title="用户">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="币种">币种</label>
+                            <div class="layui-input-inline">
+                                <select name="currencyId" lay-search="">
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ list}" th:value="${t.id}" th:text="${t.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="收款钱包">收款钱包</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="address" autocomplete="off" class="layui-input" title="收款钱包">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" title="hash">hash</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="hash" autocomplete="off" class="layui-input" title="hash">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">推送类型</label>
+                            <div class="layui-input-inline">
+                                <select name="sendType">
+                                    <option value="">所有</option>
+                                    <option th:each="t,tState:${ sendTypeList}" th:value="${t.key}"
+                                            th:text="${t.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="startCreateTime" id="startCreateTime"
+                                       lay-verify="startCreateTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="endCreateTime" id="endCreateTime" lay-verify="endCreateTime"
+                                       placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-sm" lay-submit lay-filter="data-search-btn">搜索</a>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" type="reset">重置</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-warm" lay-submit
+                                    lay-filter="data-export-btn">导出
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <div class="layui-btn-group">
+            <button class="layui-btn layui-btn-sm data-send-btn">推送</button>
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <!--           <div style="display: flex;justify-content:space-between">-->
+        <!--               <div style="flex: 1">1</div>-->
+        <!--               <div style="flex: 1">2</div>-->
+        <!--           </div>-->
+        <table class="layui-table-total">
+            <tr>
+                <td data-field="0" data-key="1-0-0" align="center" class="layui-table-col-special">
+                    <div class="layui-table-cell laytable-cell-1-0-0 laytable-cell-checkbox">总计</div>
+                </td>
+                <td data-field="id" data-key="1-0-1" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-1"></div>
+                </td>
+                <td data-field="userName" data-key="1-0-2" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-2"></div>
+                </td>
+                <td data-field="realName" data-key="1-0-3" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-3"></div>
+                </td>
+                <td data-field="currencyName" data-key="1-0-4" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-4"></div>
+                </td>
+                <td data-field="quantity" data-key="1-0-5" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-5" id="totalRecharge"> </div>
+                </td>
+                <td data-field="status" data-key="1-0-6" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-6"></div>
+                </td>
+                <td data-field="address" data-key="1-0-7" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-7"></div>
+                </td>
+                <td data-field="dealDate" data-key="1-0-8" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-8"></div>
+                </td>
+                <td data-field="hash" data-key="1-0-9" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-9"></div>
+                </td>
+                <td data-field="type" data-key="1-0-10" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-10"></div>
+                </td>
+                <td data-field="sendTypeStr" data-key="1-0-11" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-11"></div>
+                </td>
+                <td data-field="protocolStr" data-key="1-0-12" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-12"></div>
+                </td>
+                <td data-field="walletTypeStr" data-key="1-0-13" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-13"></div>
+                </td>
+                <td data-field="createTime" data-key="1-0-14" align="center" class="">
+                    <div class="layui-table-cell laytable-cell-1-0-14"></div>
+                </td>
+                <th class="layui-table-patch">
+                    <div class="layui-table-cell" style="width: 0.32px;"></div>
+                </th>
+            </tr>
+        </table>
+        <div><span></span></div>
+
+        <script type="text/html" id="currentTableBar">
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:inline="none">
+    //layer   使用教程https://www.layui.com/doc/modules/laydate.html
+
+    layui.use(['form', 'table', 'laydate', 'liuQi'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            laydate = layui.laydate,
+            liuQi = layui.liuQi;
+        var table_height = liuQi.getTableHeight($("fieldset").height());
+        //日期
+        laydate.render({
+            elem: '#startCreateTime',
+            type: 'datetime'  //year,month,date,time,datetime
+        });
+        //日期
+        laydate.render({
+            elem: '#endCreateTime',
+            type: 'datetime'
+        });
+        form.render();
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/admin/recharge/queryList',
+            totalRow: true,
+            cols: [[
+                {type: "checkbox", width: 30, align: "center", fixed: "left", totalRowText: "合计"},
+                {field: 'id', width: 80, align: "center", title: 'ID'},
+                {field: 'userName', title: '用户', align: "center"},
+                {field: 'realName', title: '姓名', align: "center"},
+                {field: 'currencyName', title: '币种', align: "center"},
+                {field: 'quantity', title: '充值数量', align: "center", totalRow: true},
+                {
+                    field: 'status', title: '状态', align: "center",
+                    templet: function (d) {
+                        var type = "";
+                        if (d.status == 0) {
+                            type = "layui-btn-primary";
+                        } else if (d.status == 4) {
+                            type = "layui-btn-warn";
+                        }
+                        return "<a class='layui-btn layui-btn-xs " + type + "'>" + d.statusStr + "</a>";
+                    }
+                },
+                {field: 'address', width: 350, title: '收款钱包', align: "center"},
+                {field: 'dealDate', width: 160, title: '处理时间', align: "center"},
+                {field: 'hash', width: 450, title: 'hash', align: "center"},
+                {
+                    field: 'type', title: '类型', align: "center",
+                    templet: function (d) {
+                        var type = "";
+                        if (d.type == 0) {
+                            type = "layui-btn-primary";
+                        } else if (d.type == 4) {
+                            type = "layui-btn-warn";
+                        }
+                        return "<a class='layui-btn layui-btn-xs " + type + "'>" + d.typeStr + "</a>";
+                    }
+                },
+                {field: 'sendTypeStr', title: '推送类型', align: "center"},
+                {field: 'protocolStr', title: '协议', align: "center"},
+                {field: 'walletTypeStr', title: '钱包类型', align: "center"},
+                {field: 'createTime', width: 160, title: '创建时间', align: "center"},
+                /*{field: 'roleId', title: '财富',align: "center",
+                    templet: function (d) {
+                        return d.id + "-" + d.name
+                    }
+                },*/
+            ]],
+            done: function(res, curr, count){
+                console.log(res);
+                $("#totalRecharge").text(res.total);
+            },
+
+            height: table_height,
+            limits: [10, 20, 50, 100],
+            limit: 20,
+            cellMinWidth: 100,
+            loading: true,
+            page: true
+        });
+
+
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = data.field;
+
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: result
+            }, 'data');
+            return false;
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-export-btn)', function (data) {
+            var params = data.field;
+            liuQi.export('/admin/recharge/exportExc', params);
+            return false;
+        });
+
+        $(".data-send-btn").on("click", function () {
+            //参数    url，参数，标题，宽度%（默认70%），高度%（默认70%）
+            liuQi.ajaxRefreshTable('/admin/recharge/send', {}, "");
+        });
+
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+            } else if (obj.event === 'view') {
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.LockConfigMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.currency_id,t.trade_id,
+			t.start_time,t.end_time,t.buy_switch,t.sell_switch,t.buy_times,t.buy_times_rate,
+			t.buy_day_rate,t.buy_day_max,t.sell_times,t.sell_times_rate,t.sell_day_rate,t.sell_day_max,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="lockConfigModel" id="lockConfig">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="tradeId" column="trade_id"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="buySwitch" column="buy_switch"/>
+		<result property="sellSwitch" column="sell_switch"/>
+		<result property="buyTimes" column="buy_times"/>
+		<result property="buyTimesRate" column="buy_times_rate"/>
+		<result property="buyDayRate" column="buy_day_rate"/>
+		<result property="buyDayMax" column="buy_day_max"/>
+		<result property="sellTimes" column="sell_times"/>
+		<result property="sellTimesRate" column="sell_times_rate"/>
+		<result property="sellDayRate" column="sell_day_rate"/>
+		<result property="sellDayMax" column="sell_day_max"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="lockConfigModelDto" extends="lockConfig" id="lockConfigDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="lockConfigModel">
+		insert into t_lock_config(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="currencyId != null">`currency_id`,</if>
+				<if test="tradeId != null">`trade_id`,</if>
+				<if test="startTime != null">`start_time`,</if>
+				<if test="endTime != null">`end_time`,</if>
+				<if test="buySwitch != null">`buy_switch`,</if>
+				<if test="sellSwitch != null">`sell_switch`,</if>
+				<if test="buyTimes != null">`buy_times`,</if>
+				<if test="buyTimesRate != null">`buy_times_rate`,</if>
+				<if test="buyDayRate != null">`buy_day_rate`,</if>
+				<if test="buyDayMax != null">`buy_day_max`,</if>
+				<if test="sellTimes != null">`sell_times`,</if>
+				<if test="sellTimesRate != null">`sell_times_rate`,</if>
+				<if test="sellDayRate != null">`sell_day_rate`,</if>
+				<if test="sellDayMax != null">`sell_day_max`,</if>
+		
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="currencyId != null">#{currencyId},</if>
+				<if test="tradeId != null">#{tradeId},</if>
+				<if test="startTime != null">#{startTime},</if>
+				<if test="endTime != null">#{endTime},</if>
+				<if test="buySwitch != null">#{buySwitch},</if>
+				<if test="sellSwitch != null">#{sellSwitch},</if>
+				<if test="buyTimes != null">#{buyTimes},</if>
+				<if test="buyTimesRate != null">#{buyTimesRate},</if>
+				<if test="buyDayRate != null">#{buyDayRate},</if>
+				<if test="buyDayMax != null">#{buyDayMax},</if>
+				<if test="sellTimes != null">#{sellTimes},</if>
+				<if test="sellTimesRate != null">#{sellTimesRate},</if>
+				<if test="sellDayRate != null">#{sellDayRate},</if>
+				<if test="sellDayMax != null">#{sellDayMax},</if>
+		
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="lockConfigModel">
+		update  t_lock_config
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="tradeId != null">
+                    `trade_id` = #{tradeId},
+            </if>
+            <if test="startTime != null">
+                    `start_time` = #{startTime},
+            </if>
+            <if test="endTime != null">
+                    `end_time` = #{endTime},
+            </if>
+            <if test="buySwitch != null">
+                    `buy_switch` = #{buySwitch},
+            </if>
+            <if test="sellSwitch != null">
+                    `sell_switch` = #{sellSwitch},
+            </if>
+            <if test="buyTimes != null">
+                    `buy_times` = #{buyTimes},
+            </if>
+            <if test="buyTimesRate != null">
+                    `buy_times_rate` = #{buyTimesRate},
+            </if>
+            <if test="buyDayRate != null">
+                    `buy_day_rate` = #{buyDayRate},
+            </if>
+            <if test="buyDayMax != null">
+                    `buy_day_max` = #{buyDayMax},
+            </if>
+            <if test="sellTimes != null">
+                    `sell_times` = #{sellTimes},
+            </if>
+            <if test="sellTimesRate != null">
+                    `sell_times_rate` = #{sellTimesRate},
+            </if>
+            <if test="sellDayRate != null">
+                    `sell_day_rate` = #{sellDayRate},
+            </if>
+            <if test="sellDayMax != null">
+                    `sell_day_max` = #{sellDayMax},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="lockConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_lock_config t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="lockConfigDto">
+		select <include refid="allColumn"></include> 
+		from  t_lock_config t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="lockConfigModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="lockConfigModelDto" resultMap="lockConfigDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_lock_config t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null    and id &gt; -2 ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null   ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null   ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null    and version &gt; -2 ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="currencyId != null    and currencyId &gt; -2 ">
+				AND t.currency_id = #{currencyId}
+            </if>
+	
+			<if test="tradeId != null    and tradeId &gt; -2 ">
+				AND t.trade_id = #{tradeId}
+            </if>
+	
+			<if test="startTime != null   ">
+				AND t.start_time = #{startTime}
+            </if>
+	
+			<if test="endTime != null   ">
+				AND t.end_time = #{endTime}
+            </if>
+	
+			<if test="buySwitch != null    and buySwitch &gt; -2 ">
+				AND t.buy_switch = #{buySwitch}
+            </if>
+	
+			<if test="sellSwitch != null    and sellSwitch &gt; -2 ">
+				AND t.sell_switch = #{sellSwitch}
+            </if>
+	
+			<if test="buyTimes != null    and buyTimes &gt; -2 ">
+				AND t.buy_times = #{buyTimes}
+            </if>
+	
+			<if test="buyTimesRate != null   ">
+				AND t.buy_times_rate = #{buyTimesRate}
+            </if>
+	
+			<if test="buyDayRate != null   ">
+				AND t.buy_day_rate = #{buyDayRate}
+            </if>
+	
+			<if test="buyDayMax != null   ">
+				AND t.buy_day_max = #{buyDayMax}
+            </if>
+	
+			<if test="sellTimes != null    and sellTimes &gt; -2 ">
+				AND t.sell_times = #{sellTimes}
+            </if>
+	
+			<if test="sellTimesRate != null   ">
+				AND t.sell_times_rate = #{sellTimesRate}
+            </if>
+	
+			<if test="sellDayRate != null   ">
+				AND t.sell_day_rate = #{sellDayRate}
+            </if>
+	
+			<if test="sellDayMax != null   ">
+				AND t.sell_day_max = #{sellDayMax}
+            </if>
+	
+			
+            <if test="startCreateTime!=null">
+                and t.create_time>#{startCreateTime}
+            </if>
+            <if test="endCreateTime!=null">
+                <![CDATA[and t.create_time<=#{endCreateTime}]]>
+            </if>
+        </trim>
+	</sql>
+
+
+	<select id="getByCurrencyId" resultMap="lockConfigDto">
+		select <include refid="allColumn"></include>
+		from  t_lock_config t
+		where t.currency_id = #{currencyId}
+	</select>
+
+
+	<select id="getByTradeId" resultMap="lockConfigDto">
+		select <include refid="allColumn"></include>
+		from  t_lock_config t
+		where t.trade_id = #{tradeId}
+	</select>
+
+
+	<select id="getLockCurrencyIdList" resultType="long">
+		select currency_id
+		from  t_lock_config t
+	</select>
+
+
+	<select id="getLockTradeIdList" resultType="long">
+		select trade_id
+		from  t_lock_config t
+	</select>
+
+</mapper>

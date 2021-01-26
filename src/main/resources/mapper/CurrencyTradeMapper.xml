@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.CurrencyTradeMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.currency_id,t.trade_currency_id,t.area_id,t.position,t.area,
+			t.search_name,t.status,t.trade_switch,t.price_switch,t.quantity_switch,t.limit_switch,t.buy_rate,t.sell_rate,t.min_pirce,
+			t.max_pirce,t.min_quantity,t.max_quantity,t.limit_rate,t.digits_p,t.digits_q,t.virtual_switch,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="currencyTradeModel" id="currencyTrade">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="tradeCurrencyId" column="trade_currency_id"/>
+		<result property="areaId" column="area_id"/>
+		<result property="position" column="position"/>
+		<result property="area" column="area"/>
+		<result property="searchName" column="search_name"/>
+		<result property="status" column="status"/>
+		<result property="tradeSwitch" column="trade_switch"/>
+		<result property="priceSwitch" column="price_switch"/>
+		<result property="quantitySwitch" column="quantity_switch"/>
+		<result property="limitSwitch" column="limit_switch"/>
+		<result property="buyRate" column="buy_rate"/>
+		<result property="sellRate" column="sell_rate"/>
+		<result property="minPirce" column="min_pirce"/>
+		<result property="maxPirce" column="max_pirce"/>
+		<result property="minQuantity" column="min_quantity"/>
+		<result property="maxQuantity" column="max_quantity"/>
+		<result property="limitRate" column="limit_rate"/>
+		<result property="digitsP" column="digits_p"/>
+		<result property="digitsQ" column="digits_q"/>
+		<result property="virtualSwitch" column="virtual_switch"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="currencyTradeModelDto" extends="currencyTrade" id="currencyTradeDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="currencyTradeModel">
+		insert into t_currency_trade(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="currencyId != null">`currency_id`,</if>
+				<if test="tradeCurrencyId != null">`trade_currency_id`,</if>
+				<if test="areaId != null">`area_id`,</if>
+				<if test="position != null">`position`,</if>
+				<if test="area != null">`area`,</if>
+				<if test="searchName != null">`search_name`,</if>
+				<if test="status != null">`status`,</if>
+				<if test="tradeSwitch != null">`trade_switch`,</if>
+				<if test="priceSwitch != null">`price_switch`,</if>
+				<if test="quantitySwitch != null">`quantity_switch`,</if>
+				<if test="limitSwitch != null">`limit_switch`,</if>
+				<if test="buyRate != null">`buy_rate`,</if>
+				<if test="sellRate != null">`sell_rate`,</if>
+				<if test="minPirce != null">`min_pirce`,</if>
+				<if test="maxPirce != null">`max_pirce`,</if>
+				<if test="minQuantity != null">`min_quantity`,</if>
+				<if test="maxQuantity != null">`max_quantity`,</if>
+				<if test="limitRate != null">`limit_rate`,</if>
+				<if test="digitsP != null">`digits_p`,</if>
+				<if test="digitsQ != null">`digits_q`,</if>
+				<if test="virtualSwitch != null">`virtual_switch`,</if>
+
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="currencyId != null">#{currencyId},</if>
+				<if test="tradeCurrencyId != null">#{tradeCurrencyId},</if>
+				<if test="areaId != null">#{areaId},</if>
+				<if test="position != null">#{position},</if>
+				<if test="area != null">#{area},</if>
+				<if test="searchName != null">#{searchName},</if>
+				<if test="status != null">#{status},</if>
+				<if test="tradeSwitch != null">#{tradeSwitch},</if>
+				<if test="priceSwitch != null">#{priceSwitch},</if>
+				<if test="quantitySwitch != null">#{quantitySwitch},</if>
+				<if test="limitSwitch != null">#{limitSwitch},</if>
+				<if test="buyRate != null">#{buyRate},</if>
+				<if test="sellRate != null">#{sellRate},</if>
+				<if test="minPirce != null">#{minPirce},</if>
+				<if test="maxPirce != null">#{maxPirce},</if>
+				<if test="minQuantity != null">#{minQuantity},</if>
+				<if test="maxQuantity != null">#{maxQuantity},</if>
+				<if test="limitRate != null">#{limitRate},</if>
+				<if test="digitsP != null">#{digitsP},</if>
+				<if test="digitsQ != null">#{digitsQ},</if>
+				<if test="virtualSwitch != null">#{virtualSwitch},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="currencyTradeModel">
+		update  t_currency_trade
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="tradeCurrencyId != null">
+                    `trade_currency_id` = #{tradeCurrencyId},
+            </if>
+            <if test="areaId != null">
+                    `area_id` = #{areaId},
+            </if>
+            <if test="position != null">
+                    `position` = #{position},
+            </if>
+            <if test="area != null">
+                    `area` = #{area},
+            </if>
+            <if test="searchName != null">
+                    `search_name` = #{searchName},
+            </if>
+            <if test="status != null">
+                    `status` = #{status},
+            </if>
+            <if test="tradeSwitch != null">
+                    `trade_switch` = #{tradeSwitch},
+            </if>
+            <if test="priceSwitch != null">
+                    `price_switch` = #{priceSwitch},
+            </if>
+            <if test="quantitySwitch != null">
+                    `quantity_switch` = #{quantitySwitch},
+            </if>
+            <if test="limitSwitch != null">
+                    `limit_switch` = #{limitSwitch},
+            </if>
+            <if test="buyRate != null">
+                    `buy_rate` = #{buyRate},
+            </if>
+            <if test="sellRate != null">
+                    `sell_rate` = #{sellRate},
+            </if>
+            <if test="minPirce != null">
+                    `min_pirce` = #{minPirce},
+            </if>
+            <if test="maxPirce != null">
+                    `max_pirce` = #{maxPirce},
+            </if>
+            <if test="minQuantity != null">
+                    `min_quantity` = #{minQuantity},
+            </if>
+            <if test="maxQuantity != null">
+                    `max_quantity` = #{maxQuantity},
+            </if>
+            <if test="limitRate != null">
+                    `limit_rate` = #{limitRate},
+            </if>
+			<if test="digitsP != null">
+                    `digits_p` = #{digitsP},
+            </if>
+			<if test="digitsQ != null">
+				`digits_q` = #{digitsQ},
+			</if>
+			<if test="virtualSwitch != null">
+				`virtual_switch` = #{virtualSwitch},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="currencyTradeDto">
+		select <include refid="allColumn"></include> 
+		from  t_currency_trade t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="currencyTradeDto">
+		select <include refid="allColumn"></include> 
+		from  t_currency_trade t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="currencyTradeModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="currencyTradeModelDto" resultMap="currencyTradeDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_currency_trade t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="currencyId != null and  currencyId  &gt; -2">
+				AND t.currency_id = #{currencyId}
+            </if>
+	
+			<if test="tradeCurrencyId != null and  tradeCurrencyId  &gt; -2">
+				AND t.trade_currency_id = #{tradeCurrencyId}
+            </if>
+	
+			<if test="areaId != null and  areaId &gt; -2">
+				AND t.area_id = #{areaId}
+            </if>
+	
+			<if test="position != null and  position &gt; -2">
+				AND t.position = #{position}
+            </if>
+	
+			<if test="area != null and  area &gt; -2">
+				AND t.area = #{area}
+            </if>
+	
+			<if test="searchName != null and  searchName != ''">
+				AND t.search_name = #{searchName}
+            </if>
+	
+			<if test="status != null and  status &gt; -2">
+				AND t.status = #{status}
+            </if>
+	
+			<if test="tradeSwitch != null and  tradeSwitch &gt; -2">
+				AND t.trade_switch = #{tradeSwitch}
+            </if>
+	
+			<if test="priceSwitch != null and  priceSwitch &gt; -2">
+				AND t.price_switch = #{priceSwitch}
+            </if>
+	
+			<if test="quantitySwitch != null and  quantitySwitch &gt; -2">
+				AND t.quantity_switch = #{quantitySwitch}
+            </if>
+	
+			<if test="limitSwitch != null and  limitSwitch &gt; -2">
+				AND t.limit_switch = #{limitSwitch}
+            </if>
+			<if test="digitsP != null and  digitsP &gt; -2">
+				AND t.digits_p = #{digitsP}
+            </if>
+			<if test="digitsQ != null and  digitsQ &gt; -2">
+				AND t.digits_q = #{digitsQ}
+			</if>
+	
+			<if test="buyRate != null ">
+				AND t.buy_rate = #{buyRate}
+            </if>
+	
+			<if test="sellRate != null ">
+				AND t.sell_rate = #{sellRate}
+            </if>
+	
+			<if test="minPirce != null">
+				AND t.min_pirce = #{minPirce}
+            </if>
+	
+			<if test="maxPirce != null">
+				AND t.max_pirce = #{maxPirce}
+            </if>
+	
+			<if test="minQuantity != null">
+				AND t.min_quantity = #{minQuantity}
+            </if>
+	
+			<if test="maxQuantity != null">
+				AND t.max_quantity = #{maxQuantity}
+            </if>
+	
+			<if test="limitRate != null">
+				AND t.limit_rate = #{limitRate}
+            </if>
+			<if test="virtualSwitch != null and  virtualSwitch &gt; -2">
+				AND t.virtual_switch = #{virtualSwitch}
+			</if>
+
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+			
+        </trim>
+	</sql>
+
+
+	<select id="getTradeIdByTradeCurrencyId" resultType="long">
+		select  t.id
+		from t_currency_trade t
+		where t.trade_currency_id = #{currencyId}
+	</select>
+
+	<select id="getTradeIdByCurrencyId" resultType="long">
+		select  t.id
+		from t_currency_trade t
+		where t.currency_id = #{currencyId}
+	</select>
+</mapper>

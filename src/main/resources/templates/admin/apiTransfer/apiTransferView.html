@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title={moduleName}查看">
+<body>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formfilter">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户id:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.userId}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">币种:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.currencyId}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数量:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.quantity}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">0未审核 1审核通过 2拒绝:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.status}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">类型0可用 1锁仓:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.type}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">转入名称:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.name}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">外部编号唯一码:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.num}" disabled="disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">外部转入人:</label>
+                    <div class="layui-input-block">
+                            <input class="layui-input" th:value="${ m.transferName}" disabled="disabled">
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

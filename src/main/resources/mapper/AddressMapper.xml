@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.AddressMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.path,t.address,t.status,
+		</trim>
+	</sql>
+
+	<!-- 数据库和实体映射-->
+	<resultMap type="addressModel" id="addressResult">
+	<result property="id" column="id"/>
+	<result property="path" column="path"/>
+	<result property="address" column="address"/>
+	<result property="status" column="status"/>
+	</resultMap>
+
+	<!-- 更新 -->
+	<update id="updateUsing" >
+		update ${tableName} set status =1 where id =#{id}
+	</update>
+
+	<select id="getNoUserAddress" resultMap="addressResult">
+		select <include refid="allColumn"></include>
+		from  ${tableName} t
+		where t.status=0
+		limit 1
+	</select>
+
+</mapper>

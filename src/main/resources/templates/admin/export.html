@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/lib/layui-v2.5.5/css/layui.css}" media="all">
+    <script th:src="@{/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+    <script th:src="@{/lib/layui-v2.5.5/layui.all.js}" charset="utf-8"></script>
+</head>
+<body>
+<div>
+    <div style="z-index: 10;position: fixed;margin-left: 10px;width: 30px;border: #0C0C0C 1px dashed"><a href="#top">返回顶部</a></div>
+    <div style="margin: 50px 50px;">
+        <a name="top"></a>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>表介绍</legend>
+        </fieldset>
+        <table class="layui-table">
+            <tr>
+                <td width="25%">表名(点击跳转指定明细)</td>
+                <td width="75%">备注</td>
+            </tr>
+            <tr  th:each="item:${list}">
+                <td><a th:href="${'#'+item.tableName}" th:text="${item.tableName}"></a></td>
+                <td th:text="${item.tableComment}"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-top: 50px;">
+
+    </div>
+    <div th:each="item:${list}"  style="margin: 50px 50px;">
+        <a th:name="${item.tableName}"></a>
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend th:text="${item.tableName+'('+item.tableComment+')'}"></legend>
+        </fieldset>
+        <table class="layui-table">
+            <tr>
+                <td width="20%">表字段</td>
+                <td width="15%">表类型</td>
+                <td width="20%">实体</td>
+                <td width="15%">实体类型</td>
+                <td width="30%">备注</td>
+            </tr>
+            <tr th:each="item1:${item.columnList}">
+                <td th:text="${item1.name}">1</td>
+                <td th:text="${item1.columnType}">1</td>
+                <td th:text="${item1.entityName}">2</td>
+                <td th:text="${item1.entityType}">3</td>
+                <td th:text="${item1.comment}">4</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

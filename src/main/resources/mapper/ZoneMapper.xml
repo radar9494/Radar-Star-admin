@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.ZoneMapper">
+
+
+    <!-- 数据库和实体映射-->
+    <resultMap type="zoneModel" id="zoneResult">
+        <result property="zone" column="zone"/>
+        <result property="name" column="name"/>
+        <result property="cnName" column="cn_name"/>
+        <result property="position" column="position"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+
+    <select id="getAll" resultMap="zoneResult">
+		select * from  t_zone where status=1 order by position asc,name asc
+	</select>
+
+</mapper>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:include="admin/head :: head" th:with="title=管理员添加">
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layuimini-search">
+            <div class="layui-form-item">
+                <label class="layui-form-label">字段</label>
+                <div class="layui-input-block">
+                    <input type="text" id="columnName"  th:value="${columnName}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" th:value="${remark}" disabled="disabled" class="layui-input">
+                </div>
+            </div>
+        </fieldset>
+        <div class="row cl" style="margin-top: 20px;">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="layui-btn" onclick="add();" type="button" value="&nbsp;&nbsp;添加一行&nbsp;&nbsp;">
+                <input class="layui-btn" onclick="enumInfo();" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                <input class="layui-btn" onclick="cancelInfo();" type="button" value="&nbsp;&nbsp;取消&nbsp;&nbsp;">
+            </div>
+        </div>
+        <table class="layui-table" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th>key(例：0)</th>
+                <th>英文名称(例：FAIL)</th>
+                <th>中文显示(例：备注)</th>
+                <td>操作</td>
+            </tr>
+            </thead>
+            <tbody id="listInfo">
+            <tr>
+                <td><input type='text' class='layui-input' ></td>
+                <td><input type='text' class='layui-input' ></td>
+                <td><input type='text' class='layui-input' ></td>
+                <td><span class="layui-btn layui-btn-warm" onclick="deleteTr(this)">删除</span></td>
+            </tr>
+            <tr>
+                <td><input type='text' class='layui-input' ></td>
+                <td><input type='text' class='layui-input' ></td>
+                <td><input type='text' class='layui-input' ></td>
+                <td><span class="layui-btn layui-btn-warm" onclick="deleteTr(this)">删除</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function add(){
+        var html="<tr class='text-c'>" +
+            "<td><input type='text' class='layui-input' ></td>" +
+            "<td><input type='text' class='layui-input' ></td>" +
+            "<td><input type='text' class='layui-input' ></td>" +
+            "<td><span class='layui-btn layui-btn-warm' onclick='deleteTr(this)'>删除</span></td>" +
+            "</tr>";
+        $("tbody").append(html);
+    }
+
+    function deleteTr(that){
+        $(that).parent().parent().remove();
+    }
+    function cancelInfo(){
+        var column = $("#columnName").val();
+        var name='enumType_'+column;
+        var namef='frontShow_'+column;
+        $("input[name='"+name+"'][value=0]",parent.document).prop("checked",true);
+        $("input[name='"+namef+"'][value=0]",parent.document).prop("checked",true);
+        $("#frontQueryType_"+column,parent.document).val(1);
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+    function enumInfo() {
+        var column = $("#columnName").val();
+        var enumArray = [];
+        var canSubmit = true;
+        $("#listInfo tr").each(function (index) {
+            var enumO = {};
+            var input = $(this).find("input");
+            enumO.key = $(input[0]).val();
+            if (enumO.key == '') {
+                canSubmit = false;
+                parent.layer.msg("第"+(index+1)+"行，key不能为空", {icon: 1, time: 1000});
+                return false;
+            }
+            enumO.name = $(input[1]).val();
+            if (enumO.name == '') {
+                canSubmit = false;
+                parent.layer.msg("第"+(index+1)+"行，英文名称不能为空", {icon: 1, time: 1000});
+                return false;
+            }
+            enumO.comment = $(input[2]).val();
+            if (enumO.comment == '') {
+                canSubmit = false;
+                parent.layer.msg("第"+(index+1)+"行中文名称不能为空", {icon: 1, time: 1000});
+                return false;
+            }
+            enumArray.push(enumO);
+        });
+        if (canSubmit) {
+            parent.document.getElementById("enum_" + column).value = JSON.stringify(enumArray);
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+        }
+    }
+</script>
+
+</body>
+</html>

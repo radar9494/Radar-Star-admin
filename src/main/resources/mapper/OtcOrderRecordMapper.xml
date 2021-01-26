@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.OtcOrderRecordMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.create_time,t.update_time,t.remark,t.version,t.order_id,t.currency_id,t.buy_user_id,t.sell_user_id,t.type,t.price,t.quantity,t.money,t.status,t.memo,t.appeal_type,t.appeal_user,t.appeal_content,
+			t.success_status,t.order_no,t.pay_type
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="otcOrderRecordModel" id="otcOrderRecord">
+		<result property="id" column="id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="orderId" column="order_id"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="buyUserId" column="buy_user_id"/>
+		<result property="sellUserId" column="sell_user_id"/>
+		<result property="type" column="type"/>
+		<result property="price" column="price"/>
+		<result property="quantity" column="quantity"/>
+		<result property="money" column="money"/>
+		<result property="status" column="status"/>
+		<result property="memo" column="memo"/>
+		<result property="appealType" column="appeal_type"/>
+		<result property="appealUser" column="appeal_user"/>
+		<result property="appealContent" column="appeal_content"/>
+		<result property="successStatus" column="success_status"/>
+		<result property="orderNo" column="order_no"/>
+		<result property="payType" column="pay_type"/>
+	</resultMap>
+
+	<!-- dto映射  添加的字段放在这块-->
+    <resultMap type="otcOrderRecordModelDto" extends="otcOrderRecord" id="otcOrderRecordDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="otcOrderRecordModel">
+		insert into t_otc_order_record(
+		<trim  suffixOverrides=",">
+				<if test="createTime != null">`create_time`,</if>
+				<if test="updateTime != null">`update_time`,</if>
+				<if test="remark != null">`remark`,</if>
+				<if test="version != null">`version`,</if>
+				<if test="orderId != null">`order_id`,</if>
+				<if test="currencyId != null">`currency_id`,</if>
+				<if test="buyUserId != null">`buy_user_id`,</if>
+				<if test="sellUserId != null">`sell_user_id`,</if>
+				<if test="type != null">`type`,</if>
+				<if test="price != null">`price`,</if>
+				<if test="quantity != null">`quantity`,</if>
+				<if test="money != null">`money`,</if>
+				<if test="status != null">`status`,</if>
+				<if test="memo != null">`memo`,</if>
+				<if test="appealType != null">`appeal_type`,</if>
+				<if test="appealUser != null">`appeal_user`,</if>
+				<if test="appealContent != null">`appeal_content`,</if>
+				<if test="successStatus != null">`success_status`,</if>
+				<if test="orderNo != null">`order_no`,</if>
+				<if test="payType != null">`pay_type`,</if>
+
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+				<if test="createTime != null">#{createTime},</if>
+				<if test="updateTime != null">#{updateTime},</if>
+				<if test="remark != null">#{remark},</if>
+				<if test="version != null">#{version},</if>
+				<if test="orderId != null">#{orderId},</if>
+				<if test="currencyId != null">#{currencyId},</if>
+				<if test="buyUserId != null">#{buyUserId},</if>
+				<if test="sellUserId != null">#{sellUserId},</if>
+				<if test="type != null">#{type},</if>
+				<if test="price != null">#{price},</if>
+				<if test="quantity != null">#{quantity},</if>
+				<if test="money != null">#{money},</if>
+				<if test="status != null">#{status},</if>
+				<if test="memo != null">#{memo},</if>
+				<if test="appealType != null">#{appealType},</if>
+				<if test="appealUser != null">#{appealUser},</if>
+				<if test="appealContent != null">#{appealContent},</if>
+				<if test="successStatus != null">#{successStatus},</if>
+				<if test="orderNo != null">#{orderNo},</if>
+				<if test="payType != null">#{payType},</if>
+
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="otcOrderRecordModel">
+		update  t_otc_order_record
+		<set>
+            <if test="createTime != null">
+                    `create_time` = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                    `update_time` = #{updateTime},
+            </if>
+            <if test="remark != null">
+                    `remark` = #{remark},
+            </if>
+            <if test="version != null">
+                    `version` = #{version},
+            </if>
+            <if test="orderId != null">
+                    `order_id` = #{orderId},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="buyUserId != null">
+                    `buy_user_id` = #{buyUserId},
+            </if>
+            <if test="sellUserId != null">
+                    `sell_user_id` = #{sellUserId},
+            </if>
+            <if test="type != null">
+                    `type` = #{type},
+            </if>
+            <if test="price != null">
+                    `price` = #{price},
+            </if>
+            <if test="quantity != null">
+                    `quantity` = #{quantity},
+            </if>
+            <if test="money != null">
+                    `money` = #{money},
+            </if>
+            <if test="status != null">
+                    `status` = #{status},
+            </if>
+            <if test="memo != null">
+                    `memo` = #{memo},
+            </if>
+            <if test="appealType != null">
+                    `appeal_type` = #{appealType},
+            </if>
+            <if test="appealUser != null">
+                    `appeal_user` = #{appealUser},
+            </if>
+            <if test="appealContent != null">
+                    `appeal_content` = #{appealContent},
+            </if>
+            <if test="successStatus != null">
+                    `success_status` = #{successStatus},
+            </if>
+            <if test="orderNo != null">
+                    `order_no` = #{orderNo},
+            </if>
+            <if test="payType != null">
+                    `pay_type` = #{payType},
+            </if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="otcOrderRecordDto">
+		select <include refid="allColumn"></include> 
+		from  t_otc_order_record t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="otcOrderRecordDto">
+		select <include refid="allColumn"></include> 
+		from  t_otc_order_record t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+    <!-- 优化查询count -->
+    <select id="queryList_COUNT" parameterType="otcOrderRecordModelDto" resultType="Long">
+        select count(t.id)
+        <include refid="queryList_base"></include>
+    </select>
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="otcOrderRecordModelDto" resultMap="otcOrderRecordDto">
+		select <include refid="allColumn"></include>
+        <include refid="queryList_base"></include>
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+	</select>
+
+    <!-- base基础查询 -->
+	<sql id="queryList_base">
+        from  t_otc_order_record t
+        <trim prefix="where" prefixOverrides="AND|OR">
+			<if test="id != null    and id &gt; -2 ">
+				AND t.id = #{id}
+            </if>
+	
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+            </if>
+	
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+            </if>
+	
+			<if test="remark != null and  remark != ''   ">
+				AND t.remark = #{remark}
+            </if>
+	
+			<if test="version != null    and version &gt; -2 ">
+				AND t.version = #{version}
+            </if>
+	
+			<if test="orderId != null    and orderId &gt; -2 ">
+				AND t.order_id = #{orderId}
+            </if>
+	
+			<if test="currencyId != null    and currencyId &gt; -2 ">
+				AND t.currency_id = #{currencyId}
+            </if>
+	
+			<if test="buyUserId != null    and buyUserId &gt; -2 ">
+				AND t.buy_user_id = #{buyUserId}
+            </if>
+	
+			<if test="sellUserId != null    and sellUserId &gt; -2 ">
+				AND t.sell_user_id = #{sellUserId}
+            </if>
+	
+			<if test="type != null    and type &gt; -2 ">
+				AND t.type = #{type}
+            </if>
+	
+			<if test="price != null  ">
+				AND t.price = #{price}
+            </if>
+	
+			<if test="quantity != null   ">
+				AND t.quantity = #{quantity}
+            </if>
+	
+			<if test="money != null   ">
+				AND t.money = #{money}
+            </if>
+	
+			<if test="status != null    and status &gt; -2 ">
+				AND t.status = #{status}
+            </if>
+	
+			<if test="memo != null and  memo != ''   ">
+				AND t.memo = #{memo}
+            </if>
+			<if test="orderNo != null and  memo != ''   ">
+				AND t.order_no = #{orderNo}
+            </if>
+
+			<if test="appealType != null    and appealType &gt; -2 ">
+				AND t.appeal_type = #{appealType}
+            </if>
+	
+			<if test="appealUser != null    and appealUser &gt; -2 ">
+				AND t.appeal_user = #{appealUser}
+            </if>
+	
+			<if test="appealContent != null and  appealContent != ''   ">
+				AND t.appeal_content = #{appealContent}
+            </if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+			<if test="statusList !=null">
+				and t.status in
+				<foreach collection="statusList" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+        </trim>
+	</sql>
+
+
+	<select id="getMyBuyNoPay" resultType="int">
+		select count(*)
+		from  t_otc_order_record t
+		where t.status = #{status}
+		and t.sell_user_id=#{userId}
+	</select>
+
+	<select id="canCancel" resultType="int">
+		select count(*)
+		from  t_otc_order_record t
+		where t.order_id = #{orderId}
+		and t.status in
+		<foreach collection="statusList" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<select id="statBuy" resultType="com.liuqi.business.dto.UserTotalDto">
+		select t.buy_user_id as userId,sum(quantity) as quantity
+		from  t_otc_order_record t
+		<trim prefix="where" prefixOverrides="AND|OR">
+			and t.currency_id =#{currencyId}
+			and t.buy_user_id in
+			<foreach collection="userIdList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+			and t.success_status in
+			<foreach collection="statusList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+		group by t.buy_user_id
+	</select>
+
+	<select id="statSell" resultType="com.liuqi.business.dto.UserTotalDto">
+		select t.sell_user_id as userId,sum(quantity) as quantity
+		from  t_otc_order_record t
+		<trim prefix="where" prefixOverrides="AND|OR">
+			and t.currency_id =#{currencyId}
+			and t.sell_user_id in
+			<foreach collection="userIdList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+			and t.success_status in
+			<foreach collection="statusList" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</trim>
+		group by t.sell_user_id
+	</select>
+
+	<select id="getSuccessQuantity" resultType="java.math.BigDecimal">
+		select sum(quantity) as quantity
+		from  t_otc_order_record t where t.order_id = #{orderId} and t.success_status=#{status}
+	</select>
+	<select id="getMyWaitPay" resultMap="otcOrderRecordDto">
+		select *
+		from  t_otc_order_record t
+		where t.status =  1
+		and t.buy_user_id=#{userId}
+		limit 1
+	</select>
+
+</mapper>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.RechargeMapper">
+
+	<!-- 常用查询 -->
+	<sql id="allColumn">
+		<trim suffixOverrides=",">
+			t.id,t.update_time,t.create_time,t.remark,t.version,
+			t.user_id,t.currency_id,t.quantity,t.status,t.address,t.deal_date,t.hash,t.type,t.send_type,t.protocol,t.wallet_type,
+		</trim>
+	</sql>
+
+    <!-- 数据库和实体映射  对应数据库实体-->
+	<resultMap type="rechargeModel" id="recharge">
+	    <result property="id" column="id"/>
+	    <result property="updateTime" column="update_time"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="remark" column="remark"/>
+	    <result property="version" column="version"/>
+		<result property="userId" column="user_id"/>
+		<result property="currencyId" column="currency_id"/>
+		<result property="quantity" column="quantity"/>
+		<result property="status" column="status"/>
+		<result property="address" column="address"/>
+		<result property="dealDate" column="deal_date"/>
+		<result property="hash" column="hash"/>
+		<result property="type" column="type"/>
+		<result property="sendType" column="send_type"/>
+		<result property="protocol" column="protocol"/>
+		<result property="walletType" column="wallet_type"/>
+	</resultMap>
+    <!-- dto映射  添加的字段放在这块-->
+    <resultMap type="rechargeModelDto" extends="recharge" id="rechargeDto">
+    </resultMap>
+
+	<!-- 新增 -->
+	<insert id="insert" keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="rechargeModel">
+		insert into t_recharge(
+		<trim  suffixOverrides=",">
+			`update_time`,`create_time`,`remark`,`version`,
+			`user_id`,`currency_id`,`quantity`,`status`,`address`,`deal_date`,`hash`,`type`,`send_type`,`protocol`,`wallet_type`
+		</trim>
+		) values(
+		<trim suffixOverrides=",">
+			#{updateTime},#{createTime},#{remark},#{version},
+			#{userId},#{currencyId},#{quantity},#{status},#{address},#{dealDate},#{hash},#{type},#{sendType},#{protocol},#{walletType}
+		</trim>
+		)
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="rechargeModel">
+		update  t_recharge
+		<set>
+		    <if test="updateTime != null">
+                `update_time` = #{updateTime},
+            </if>
+		    <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+		    <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+		    <if test="version != null">
+                `version` = #{version},
+            </if>
+	            <if test="userId != null">
+                    `user_id` = #{userId},
+            </if>
+            <if test="currencyId != null">
+                    `currency_id` = #{currencyId},
+            </if>
+            <if test="quantity != null">
+                    `quantity` = #{quantity},
+            </if>
+            <if test="status != null">
+                    `status` = #{status},
+            </if>
+            <if test="address != null">
+                    `address` = #{address},
+            </if>
+			<if test="dealDate != null">
+				`deal_date` = #{dealDate},
+			</if>
+			<if test="hash != null">
+				`hash` = #{hash},
+			</if>
+			<if test="type != null">
+				`type` = #{type},
+			</if>
+			<if test="sendType != null">
+				`send_type` = #{sendType},
+			</if>
+			<if test="protocol != null">
+				`protocol` = #{protocol},
+			</if>
+			<if test="walletType != null">
+				`wallet_type` = #{walletType},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 查询 -->
+	<select id="getById" resultMap="rechargeDto">
+		select <include refid="allColumn"></include> 
+		from  t_recharge t 
+		where t.id = #{id}
+	</select>
+	<!-- 查询 -->
+	<select id="getByIds" resultMap="rechargeDto">
+		select <include refid="allColumn"></include> 
+		from  t_recharge t 
+		where  t.id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 查询列表 -->
+	<select id="queryList" parameterType="rechargeModelDto" resultMap="rechargeDto">
+		select <include refid="allColumn"></include>
+		from  t_recharge t
+		<trim prefix="where" prefixOverrides="AND|OR">
+		
+			<if test="id != null ">
+				AND t.id = #{id}
+			</if>
+		
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+			</if>
+		
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+		
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+		
+			<if test="version != null  ">
+				AND t.version = #{version}
+			</if>
+		
+			<if test="userId != null and userId &gt; -2">
+				AND t.user_id = #{userId}
+			</if>
+
+			<if test="currencyId != null  and currencyId &gt; -2">
+				AND t.currency_id = #{currencyId}
+			</if>
+
+			<if test="quantity != null  ">
+				AND t.quantity = #{quantity}
+			</if>
+
+			<if test="status != null and status &gt; -2">
+				AND t.status = #{status}
+			</if>
+
+			<if test="address != null and  address != '' ">
+				AND t.address = #{address}
+			</if>
+			<if test="dealDate != null">
+				AND t.deal_date = #{dealDate}
+			</if>
+			<if test="hash != null and  hash != '' ">
+				AND t.hash = #{hash}
+			</if>
+			<if test="type != null and type &gt; -2">
+				AND `type` = #{type}
+			</if>
+			<if test="sendType != null and sendType &gt; -2">
+				AND `send_type` = #{sendType}
+			</if>
+			<if test="protocol != null and protocol &gt; -2">
+				AND `protocol` = #{protocol}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="walletType != null and  walletType &gt; -2">
+				AND t.wallet_type = #{walletType}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+		
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+            <if test="sortType != null and sortType!=''">
+                 ${sortType}
+            </if>
+		</if>
+
+	</select>
+
+
+	<select id="queryCountByDate" resultType="com.liuqi.business.dto.CurrencyCountDto">
+		select c.name as currencyName, count(*) as total,sum(quantity) as totalQuantity
+		from t_recharge t
+		join t_currency c
+		on t.currency_id=c.id
+		<trim prefix="where" prefixOverrides="AND|OR">
+			<if test="date != null ">
+				AND t.create_time>=#{date}
+			</if>
+			<if test="currencyId != null ">
+				AND t.currency_id=#{currencyId}
+			</if>
+		</trim>
+		group by t.currency_id
+		order by currency_id
+	</select>
+
+
+	<select id="getTotal" parameterType="rechargeModelDto" resultType="java.math.BigDecimal">
+		select  ifnull(sum(t.quantity),0)
+		from  t_recharge t
+		<trim prefix="where" prefixOverrides="AND|OR">
+
+			<if test="id != null ">
+				AND t.id = #{id}
+			</if>
+
+			<if test="updateTime != null  ">
+				AND t.update_time = #{updateTime}
+			</if>
+
+			<if test="createTime != null  ">
+				AND t.create_time = #{createTime}
+			</if>
+
+			<if test="remark != null  and  remark != '' ">
+				AND t.remark = #{remark}
+			</if>
+
+			<if test="version != null  ">
+				AND t.version = #{version}
+			</if>
+
+			<if test="userId != null and userId &gt; -2">
+				AND t.user_id = #{userId}
+			</if>
+
+			<if test="currencyId != null  and currencyId &gt; -2">
+				AND t.currency_id = #{currencyId}
+			</if>
+
+			<if test="quantity != null  ">
+				AND t.quantity = #{quantity}
+			</if>
+
+			<if test="status != null and status &gt; -2">
+				AND t.status = #{status}
+			</if>
+
+			<if test="address != null and  address != '' ">
+				AND t.address = #{address}
+			</if>
+			<if test="dealDate != null">
+				AND t.deal_date = #{dealDate}
+			</if>
+			<if test="hash != null and  hash != '' ">
+				AND t.hash = #{hash}
+			</if>
+			<if test="type != null and type &gt; -2">
+				AND `type` = #{type}
+			</if>
+			<if test="sendType != null and sendType &gt; -2">
+				AND `send_type` = #{sendType}
+			</if>
+			<if test="protocol != null and protocol &gt; -2">
+				AND `protocol` = #{protocol}
+			</if>
+			<if test="startCreateTime!=null">
+				and t.create_time>#{startCreateTime}
+			</if>
+			<if test="walletType != null and  walletType &gt; -2">
+				AND t.wallet_type = #{walletType}
+			</if>
+			<if test="endCreateTime!=null">
+				<![CDATA[and t.create_time<=#{endCreateTime}]]>
+			</if>
+		</trim>
+
+		<!-- 排序 -->
+		<if test="sortName != null and sortName!=''">
+			order by t.${sortName}
+			<if test="sortType != null and sortType!=''">
+				${sortType}
+			</if>
+		</if>
+
+	</select>
+
+
+
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuqi.business.mapper.TableIdMapper">
+
+
+	<insert id="insert"  keyColumn="id" keyProperty="id" useGeneratedKeys="true" parameterType="tableIdModel">
+		insert into ${tableName} values
+		<foreach collection="list" item="item" open="" close="" separator=",">
+			(null)
+		</foreach>
+	</insert>
+	
+	<delete id="deleteHistory">
+		delete from ${tableName}
+	</delete>
+
+</mapper>
